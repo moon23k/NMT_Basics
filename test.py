@@ -1,10 +1,8 @@
-import yaml
 import time
 import argparse
 
 import torch
 import torch.nn as nn
-from torchtext.data.metrics import bleu_score
 
 from utils.data import get_dataloader
 from utils.model import load_model
@@ -13,24 +11,28 @@ from train import Config
 
 
 
+
 def run(config):
-    chk_file = f"checkpoints{config.model}/train_states.pt"
+    chk_file = f"checkpoints/{config.model}_states.pt"
 	test_dataloader = get_dataloader('test', config)
 
     model = load_model(config)
     model_state = torch.load(f'checkpoints/{config.model}_states.pt', map_location=config.device)['model_state_dict']
     model.load_state_dict(model_state)
+    
+    criterion = nn.CrossEntropyLoss(ignore_index=config.pad_idx).to(config.device)
 
-    #Apply label_smoothing on transformer model
+    start_time = time.time()
     if config.model == 'transformer':
-        criterion = nn.CrossEntropyLoss(ignore_index=config.pad_idx, label_smoothing=0.1).to(config.device)
+        test_loss, test_bleu = trans_eval(model, test_dataloader, criterion, config, bleu=True)
     else:
-        criterion = nn.CrossEntropyLoss(ignore_index=config.pad_idx).to(config.device)
+        test_loss, test_bleu = train_eval(model, test_dataloader, criterion, config, bleu=True)
 
-    if config.model == 'transformer':
-        test_loss = trans_eval(model, test_dataloader, criterion, config)
+    end_time = time.time()
+    test_mins, test_secs = epoch_time(start_time, end_time)
+    
+    print(f"Test Loss: {test_loss} / Bleu Score: {test_bleu} / Time: {test_mins}min {test_secs}sec")
 
-    print(f"Test Loss: {test_loss}")
 
 
 if __name__ == '__main__':

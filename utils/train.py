@@ -2,7 +2,7 @@ import time
 import math
 import torch
 import torch.nn as nn
-
+from torchtext.data.metrics import bleu_score
 
 
 
@@ -45,9 +45,9 @@ def seq_train(model, dataloader, criterion, optimizer, config):
 
 
 
-def seq_eval(model, dataloader, criterion, config):
+def seq_eval(model, dataloader, criterion, config, bleu=False):
     model.eval()
-    epoch_loss = 0
+    epoch_loss, epoch_bleu = 0, 0
     total_len = len(dataloader)
 
     with torch.no_grad():
@@ -62,9 +62,16 @@ def seq_eval(model, dataloader, criterion, config):
 
             loss = criterion(pred, trg)
             epoch_loss += loss.item()
+            bleu = bleu_score(trg.tolist(), pred.tolist(), max_n=4, weights=[0.25, 0.25, 0.25, 0.25])
+            epoch_bleu += bleu
+            
+            if (i + 1) % 100 == 0 and bleu:
+                print(f"---- Step: {i+1}/{total_len} Eval Loss: {loss} Bleu Score: {bleu}")
+            elif (i + 1) % 100 == 0:
+                print(f"---- Step: {i+1}/{total_len} Eval Loss: {loss}")
 
-            if (i + 1) % 1000 == 0:
-                print(f"---- Step: {i+1}/{total_len}  Eval Loss: {loss}")
+    if bleu:
+        return epoch_loss / total_len, bleu / total_len
 
     return epoch_loss / total_len
 
@@ -103,10 +110,9 @@ def trans_train(model, dataloader, criterion, optimizer, config):
 
 
 
-def trans_eval(model, dataloader, criterion, config):
+def trans_eval(model, dataloader, criterion, config, bleu=False):
     model.eval()
-    epoch_loss = 0
-    batch_bleu = []
+    epoch_loss, epoch_bleu = 0, 0
     total_len = len(dataloader)
 
     with torch.no_grad():
@@ -123,8 +129,15 @@ def trans_eval(model, dataloader, criterion, config):
 
             loss = criterion(pred, trg_y)
             epoch_loss += loss.item()
+            bleu = bleu_score(trg.tolist(), pred.tolist(), max_n=4, weights=[0.25, 0.25, 0.25, 0.25])
+            epoch_bleu += bleu
 
-            if (i + 1) % 1000 == 0:
-                print(f"---- Step: {i+1}/{total_len}  Eval Loss: {loss}")
+            if (i + 1) % 100 == 0 and bleu:
+                print(f"---- Step: {i+1}/{total_len} Eval Loss: {loss} Bleu Score: {bleu}")
+            elif (i + 1) % 100 == 0:
+                print(f"---- Step: {i+1}/{total_len} Eval Loss: {loss}")
+
+    if bleu:
+        return epoch_loss / total_len, bleu / total_len
 
     return epoch_loss / total_len

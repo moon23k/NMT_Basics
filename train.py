@@ -29,7 +29,9 @@ class Config(object):
 
         self.model = args.model
         self.scheduler = args.scheduler
+        self.clip = 1
         self.pad_idx = 1
+        self.n_epochs = 1
         self.batch_size = 128
         self.best_valid_loss = float('inf')
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -89,10 +91,10 @@ def run(config):
 
     #train loop
     record_time = time.time()
-    for epoch in range(config.n_epochs):
+    for epoch in range(1, config.n_epochs + 1):
         start_time = time.time()
 
-        print(f"Epoch {epoch}/{config.n_epoch}")
+        print(f"Epoch {epoch}/{config.n_epochs}")
         if config.model == 'transformer':
             train_loss = trans_train(model, train_dataloader, criterion, optimizer, config)
             valid_loss = trans_eval(model, valid_dataloader, criterion, config)
@@ -102,14 +104,14 @@ def run(config):
         
         end_time = time.time()
         epoch_mins, epoch_secs = epoch_time(start_time, end_time)
-        print(f"Epoch {epoch}/{config.n_epoch} | Train Loss : {train_loss} / Eval Loss: {valid_loss} / Time: {epoch_mins}min {epoch_secs}sec")
+        print(f"Epoch {epoch}/{config.n_epochs} | Train Loss : {train_loss} / Eval Loss: {valid_loss} / Time: {epoch_mins}min {epoch_secs}sec")
 
 
         if scheduler is not None:
             scheduler.step()
         
         #save training records
-        train_record['epoch'].append(epoch+1)
+        train_record['epoch'].append(epoch)
         train_record['train_loss'].append(train_loss)
         train_record['valid_loss'].append(valid_loss)
         train_record['lr'].append(optimizer.param_groups[0]['lr'])
@@ -117,7 +119,7 @@ def run(config):
         #save best model
         if valid_loss < config.best_valid_loss:
             config.best_valid_loss = valid_loss
-            torch.save({'epochs': epoch + 1,
+            torch.save({'epochs': epoch,
                         'model_state_dict': model.state_dict(),
                         'optimizer_state_dict': optimizer.state_dict(),
                         'train_loss': train_loss,

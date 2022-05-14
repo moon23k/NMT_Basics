@@ -6,16 +6,16 @@ def split_data(data_obj):
 	src, trg = [], []
 
 	for d in data_obj:
-		src.append(d['translation']['en'])
-		trg.append(d['translation']['de'])
+		src.append(d['en'])
+		trg.append(d['de'])
 
 	return src, trg
 
 
 
 def save_file(data_obj, f_name):
-    with open(f'seq/{f_name}', 'w') as f:
-        f.write('\n'.join(data_obj))
+	with open(f'seq/{f_name}', 'w') as f:
+		f.write('\n'.join(data_obj))
 
 
 
@@ -24,12 +24,12 @@ def run():
 	valid = load_dataset('wmt14', 'de-en', split='validation')
 	test = load_dataset('wmt14', 'de-en', split='test')
 
-    train = train['translation']
-    valid = valid['translation']
-    test = test['translation']
+	train = train['translation']
+	valid = valid['translation']
+	test = test['translation']
 
 	#Downsize train dataset
-	train = train[::3]
+	train = train[::10]
 
 	#split data
 	train_src, train_trg = split_data(train)
@@ -50,8 +50,8 @@ def run():
 
 
 if __name__ == '__main__':
-    print('Data Downloading and Processing Started!')
-    run()
-    files = next(os.walk('seq'))[2]
-    assert len(files) == 6
-    print('Data Downloading and Processing Completed!')
+	print('Data Downloading and Processing Started!')
+	run()
+	files = next(os.walk('seq'))[2]
+	assert len(files) == 6
+	print('Data Downloading and Processing Completed!')
