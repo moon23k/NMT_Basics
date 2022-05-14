@@ -44,10 +44,14 @@ But the Transformer solved these problems only with Attentions. As a result, it 
 <br>
 
 
-## Training
+## Training Setup
 
-Data: Downsized WMT14 EN-DE (4.5M -> 1M)
-(Because of Hardware Limitation)
+* **Data:** downsized WMT14 EN-DE (4.5M -> 450K)
+* **Loss Function:** Cross Entropy Loss
+* **Optimizer:** Adam Optimizer
+* **Learning Rate:** 1e-3
+* **Batch Size:** 64
+* Applied Different Initialization for Each Models
 
 <br>
 
