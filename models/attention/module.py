@@ -128,10 +128,10 @@ class Seq2Seq_Attn(nn.Module):
         output_dim = self.decoder.output_dim
         outs = torch.zeros(trg_len, batch_size, output_dim).to(self.device)
 
-        #set first input value as <bos> token
+        #set first input as <bos> token
         input = trg[:, 0]
 
-        #genrerate predictions by time steps
+        #genrerate predictions as time step goes by
         for t in range(1, trg_len):
             out, hidden = self.decoder(input, hidden, enc_out)
             outs[t] = out

@@ -2,7 +2,6 @@ import time
 import math
 import torch
 import torch.nn as nn
-from torchtext.data.metrics import bleu_score
 
 
 
@@ -11,6 +10,9 @@ def epoch_time(start_time, end_time):
     elapsed_mins = int(elapsed_time / 60)
     elapsed_secs = int(elapsed_time - (elapsed_mins * 60))
     return elapsed_mins, elapsed_secs
+
+
+
 
 
 
@@ -23,11 +25,8 @@ def seq_train(model, dataloader, criterion, optimizer, config):
         optimizer.zero_grad()
         src, trg = batch[0].to(config.device), batch[1].to(config.device)
         
-        #get prediction from model
         pred = model(src, trg)
-
-        pred_dim = pred.shape[-1]
-        pred = pred[1:].contiguous().view(-1, pred_dim)
+        pred = pred[1:].contiguous().view(-1, config.output_dim)
         trg = trg[:, 1:].contiguous().view(-1)
 
         loss = criterion(pred, trg)
@@ -45,7 +44,7 @@ def seq_train(model, dataloader, criterion, optimizer, config):
 
 
 
-def seq_eval(model, dataloader, criterion, config, bleu=False):
+def seq_eval(model, dataloader, criterion, config):
     model.eval()
     epoch_loss, epoch_bleu = 0, 0
     total_len = len(dataloader)
@@ -62,16 +61,10 @@ def seq_eval(model, dataloader, criterion, config, bleu=False):
 
             loss = criterion(pred, trg)
             epoch_loss += loss.item()
-            bleu = bleu_score(trg.tolist(), pred.tolist(), max_n=4, weights=[0.25, 0.25, 0.25, 0.25])
-            epoch_bleu += bleu
             
-            if (i + 1) % 100 == 0 and bleu:
-                print(f"---- Step: {i+1}/{total_len} Eval Loss: {loss} Bleu Score: {bleu}")
-            elif (i + 1) % 100 == 0:
+            if (i + 1) % 10 == 0:
                 print(f"---- Step: {i+1}/{total_len} Eval Loss: {loss}")
 
-    if bleu:
-        return epoch_loss / total_len, bleu / total_len
 
     return epoch_loss / total_len
 
@@ -91,9 +84,7 @@ def trans_train(model, dataloader, criterion, optimizer, config):
         trg_y = trg[:, 1:].contiguous().view(-1)
 
         pred = model(src, trg_input)
-        
-        pred_dim = pred.shape[-1]
-        pred = pred.contiguous().view(-1, pred_dim)
+        pred = pred.contiguous().view(-1, config.output_dim)
 
         loss = criterion(pred, trg_y)
         loss.backward()
@@ -110,9 +101,9 @@ def trans_train(model, dataloader, criterion, optimizer, config):
 
 
 
-def trans_eval(model, dataloader, criterion, config, bleu=False):
+def trans_eval(model, dataloader, criterion, config):
     model.eval()
-    epoch_loss, epoch_bleu = 0, 0
+    epoch_loss = 0
     total_len = len(dataloader)
 
     with torch.no_grad():
@@ -129,15 +120,8 @@ def trans_eval(model, dataloader, criterion, config, bleu=False):
 
             loss = criterion(pred, trg_y)
             epoch_loss += loss.item()
-            bleu = bleu_score(trg.tolist(), pred.tolist(), max_n=4, weights=[0.25, 0.25, 0.25, 0.25])
-            epoch_bleu += bleu
 
-            if (i + 1) % 100 == 0 and bleu:
-                print(f"---- Step: {i+1}/{total_len} Eval Loss: {loss} Bleu Score: {bleu}")
-            elif (i + 1) % 100 == 0:
+            if (i + 1) % 10 == 0:
                 print(f"---- Step: {i+1}/{total_len} Eval Loss: {loss}")
-
-    if bleu:
-        return epoch_loss / total_len, bleu / total_len
 
     return epoch_loss / total_len

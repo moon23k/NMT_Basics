@@ -18,7 +18,7 @@ class Encoder(nn.Module):
         embedded = self.embedding(src)
         embedded = self.dropout(embedded)
 
-        _, (hidden, cell) = self.rnn(embedded)
+        _, (hidden, cell) = self.rnn(embedded) #hidden, cell : [num_layers, batch_size, hidden_dim]
         
         return hidden, cell
 
@@ -39,14 +39,17 @@ class Decoder(nn.Module):
 
      
     def forward(self, input, hidden, cell):
+        #intput: [batch_size] -> [batch_size, 1]
         input = input.unsqueeze(1)
         
         embedded = self.embedding(input)
         embedded = self.dropout(embedded)
 
         out, (hidden, cell) = self.rnn(embedded, (hidden, cell))
-        out = self.fc_out(out.squeeze(1))
+        out = self.fc_out(out.squeeze(1)) 
 
+        #out: [batch_size, output_dim]
+        #hidden, cell: [num_layers, batch_size, hidden_dim]
         return out, hidden, cell
 
 
@@ -71,7 +74,7 @@ class Seq2Seq(nn.Module):
         outputs = torch.zeros(trg_len, batch_size, output_dim).to(self.device)
 
         #set first input as <bos> token
-        input = trg[:, 0]
+        input = trg[:, 0] #[batch_size]
 
         #genrerate predictions by time steps
         for t in range(1, trg_len):
@@ -84,4 +87,6 @@ class Seq2Seq(nn.Module):
             teacher_force = random.random() < teacher_forcing_ratio
             input = trg[:, t] if teacher_force else top1
         
+        #outputs: [batch_size, seq_len, output_dim]
+        outputs = outputs.permute(1, 0, 2)
         return outputs

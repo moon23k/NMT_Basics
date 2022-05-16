@@ -4,7 +4,7 @@ from torch.nn.utils.rnn import pad_sequence
 
 
 
-def read_text(f_name, reverse=False, max_words=100):
+def read_text(f_name, reverse=False, max_words=50):
     with open(f'data/ids/{f_name}', 'r', encoding='utf-8') as f:
         orig_data = f.readlines()
 
