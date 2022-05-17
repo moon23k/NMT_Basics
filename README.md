@@ -41,7 +41,8 @@ But the Transformer solved these problems only with Attentions. As a result, the
 * **Data:** downsized WMT14 EN-DE dataset (4.5M -> 450K)
 * **Tokenization:** Applied Moses Tokenization first, and then applied BPE Tokenziation
 * **Loss Function:** Cross Entropy Loss
-* **Optimizer:** Adam Optimizer (Label Smoothing applied only on Transformer Model)
+* **Optimizer:** Adam Optimizer
+* **Label Smoothing:** 0.1
 * **Learning Rate:** 1e-3
 * **Batch Size:** 128
 * **Num of Epochs:** 1
