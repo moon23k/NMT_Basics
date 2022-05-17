@@ -126,7 +126,7 @@ class Seq2Seq_Attn(nn.Module):
         #define container var for saving predictions
         batch_size, trg_len = trg.shape[0], trg.shape[1]
         output_dim = self.decoder.output_dim
-        outs = torch.zeros(trg_len, batch_size, output_dim).to(self.device)
+        outputs = torch.zeros(trg_len, batch_size, output_dim).to(self.device)
 
         #set first input as <bos> token
         input = trg[:, 0]
@@ -134,7 +134,7 @@ class Seq2Seq_Attn(nn.Module):
         #genrerate predictions as time step goes by
         for t in range(1, trg_len):
             out, hidden = self.decoder(input, hidden, enc_out)
-            outs[t] = out
+            outputs[t] = out
 
             top1 = out.argmax(1)
 
@@ -142,4 +142,6 @@ class Seq2Seq_Attn(nn.Module):
             teacher_force = random.random() < teacher_forcing_ratio
             input = trg[:, t] if teacher_force else top1
 
-        return outs
+        #outputs: [batch_size, seq_len, output_dim]
+        outputs = outputs.permute(1, 0, 2)
+        return outputs

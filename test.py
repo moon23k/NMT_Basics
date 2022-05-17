@@ -7,8 +7,8 @@ from torchtext.data.metrics import bleu_score
 
 from utils.data import get_dataloader
 from utils.model import load_model
-from utils.train import seq_eval, trans_eval, epoch_time
-from train import Config
+from utils.train import seq_eval, trans_eval 
+from utils.util import Config, epoch_time
 
 
 
@@ -19,6 +19,9 @@ def seq_bleu(model, dataloader, tokenizer):
             src, trg = batch[0].to(config.device), batch[1].to(config.device)
             pred = model(src, trg)
 
+            pred = pred.argmax(-1).tolist()
+            trg = [[str(ids) for ids in seq] for seq in trg.tolist()]
+            bleu = bleu_score(pred, trg)
 
     return bleu
 
@@ -31,6 +34,9 @@ def trans_bleu(model, dataloader, tokenizer):
             src, trg = batch[0].to(config.device), batch[1].to(config.device)
             pred = model(src, trg)
 
+            pred = pred.argmax(-1).tolist()
+            trg = [[str(ids) for ids in seq] for seq in trg.tolist()]
+            bleu = bleu_score(pred, trg)
 
     return bleu
 

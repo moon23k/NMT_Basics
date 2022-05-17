@@ -1,8 +1,9 @@
-import argparse
 import torch
+import argparse
 import sentencepiece as spm
+from sacremoses import MosesTokenizer
 
-from train import Config
+from utils.util import Config
 from models.transformer.module import create_src_mask, create_trg_mask
 
 
@@ -17,11 +18,17 @@ def transformer_run(model, tokenizer, config, max_tokens=100):
 	            print(' --- Terminate the Translation! ---')
 	            break
 	        
-	        #process user input to model src tensor
-	        src = tokenizer.EncodeAsIds(seq)
-	        src = torch.tensor(src, dtype=torch.long).unsqueeze(0).to(config.device)
-	        src_mask = create_src_mask(src)
+	        #Tokenize user Input with Moses
+	        mt = MosesTokenizer(lang='en')
+	        src = mt.tokenize(src)
 
+	        #Convert tokens to ids with sentencepiece vocab
+	        src = tokenizer.EncodeAsIds(seq)
+
+	        #Convert ids to tensor
+	        src = torch.tensor(src, dtype=torch.long).unsqueeze(0).to(config.device)
+	        
+	        src_mask = create_src_mask(src)
 	        src = model.embedding(src)
 	        enc_out = model.encoder(src, src_mask)
 	        trg_indice = [tokenizer.bos_id()]
@@ -58,12 +65,18 @@ def seq2seq_run(model, tokenizer, config, max_tokens=100):
 	            print('------------------------------------')
 	            break
 	        
-	        #process user input to model src tensor
+	        #Tokenize user Input with Moses
+	        mt = MosesTokenizer(lang='en')
+	        src = mt.tokenize(src)
+
+	        #Convert tokens to ids with sentencepiece vocab
 	        src = tokenizer.EncodeAsIds(seq)
 	        if config.model == 'seq2seq':
 	        	src[1:-1] = seq[-2:0:-1]
 
+	        #Convert ids to tensor
 	        src = torch.tensor(src, dtype=torch.long).unsqueeze(0)
+	        
 	        src = model.embedding(src)
 	        enc_out = model.encoder(src, src_mask)
 	        trg_indice = [tokenizer.bos_id()]
