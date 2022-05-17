@@ -18,9 +18,8 @@ This Architecture has proved its significance by opening Neural end-to-end Model
 
 ### [Attention Mechanism](https://arxiv.org/abs/1409.0473)
 The main idea of Attention Mechanism came from Human's Brain Cognition Process.
-People live with a variety of information, but when faced with a specific problem, they focus on and recognize the information that needed to solve the problem. We call this as an **Attention**.
-This Architecture also use Encoder-Decoder architecture.
-But the difference is that the Decoder uses Attention Operation to make predictions.
+People live with a variety of information, but when faced with a specific problem, people usually focus on the information needed to solve the problem. We call this as an **Attention**.
+The Architecture also use Encoder-Decoder architecture, but the difference is that the Decoder uses Attention Operation to make predictions.
 By using Attention Mechanism, the model could avoid Bottle Neck problem, which results in Better performances in Quantative and Qualitive Evaluation at the same time.
 
 
@@ -35,7 +34,7 @@ But the Transformer solved these problems only with Attentions. As a result, the
 
 
 <br>
-
+<br>
 
 ## Training Setup
 
@@ -45,6 +44,7 @@ But the Transformer solved these problems only with Attentions. As a result, the
 * **Optimizer:** Adam Optimizer (Label Smoothing applied only on Transformer Model)
 * **Learning Rate:** 1e-3
 * **Batch Size:** 128
+* **Num of Epochs:** 1
 * Applied Different Initialization for Each Models
 
 <br>
@@ -57,45 +57,67 @@ But the Transformer solved these problems only with Attentions. As a result, the
 
 
 <br>
+<br>
 
 ## How to Use
-First clone git repo in your env
+**First clone git repo in your env**
 ```
 git clone https://github.com/moon23k/NMT_Basic
 ```
 
+<br>
 
-Download and Process Dataset by the code below 
-
+**Download and Process Dataset by the code below**
 ```
 cd NMT_Basic
-bash prepare_dataset.sh
+bash prepare_data.sh
+```
+
+<br>
+
+**Train models with "train.py" file (scheduler is optional)**
+```
+python3 train.py -model ['seq2seq', 'attention', 'transformer'] -scheduler ['constant', 'noam', 'cosine_annealing_warm', 'exponential', 'step']
+```
+
+<br>
+
+**Test trained models with "test.py" file**
+```
+python3 test.py -model ['seq2seq', 'attention', 'transformer']
+```
+
+<br>
+
+**Test with user input sentence via trained models**
+```
+python3 inference.py -model ['seq2seq', 'attention', 'transformer']
 ```
 
 
-And then with main run.sh file, you can Train or Test or Inference with three models.
-```
-bash run.sh -a [train/test/inference] -m [seq2seq, attn, transformer]
-```
-
+<br>
 <br>
 
 
 ## Results
 
-Expected BLEU Score (The value based on the Best Performance posed on "paperswithcode" home page with wmt14 en-de dataset)
+**Expected BLEU Score** 
+
+(The value based on the Best Performance posed on "paperswithcode" home page with wmt14 en-de dataset)
+
 * Seq2Seq Model : About 10
 * Seq2Seq with Attention Model : About 15
 * Transformer Model : About 20
 
 <br>
 
-Actual BLEU Score
+**Actual BLEU Score**
 * Seq2Seq Model : 
 * Seq2Seq with Attention Model : 
 * Transformer Model : 
 
-
+<br>
+<br>
 
 ## Reference
 * Sequence to Sequence Learning with Neural Networks
