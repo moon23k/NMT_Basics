@@ -1,18 +1,19 @@
 # NMT_Basics
 This repo covers Basic Models for Neural Machine Translation Task.
+The main purpose is to check the developments while comparing each model.
+For a fairer comparision, some modifications are applied and as a result, some parts may differ from those in papers.
 
 <br>
 
 
-## Models Desc
+## Models desc
 
 ### [Sequence-to-Sequence](https://arxiv.org/abs/1409.3215)
-As the name "Sequence-to-Sequence" suggests, it is an end-to-end sequence model.
+As the name **"Sequence-to-Sequence"** suggests, it is an end-to-end sequence model.
 The Architecture consists of Encoder and Decoder. In detail, the Encoder first makes Contetx Vectors from Input Sequences. 
 And then the Decoder gets Encoder Outputs and Auto Regressive Values from Target sequences as an Input Values to return Target Sequences.
 Before Sequence-to-Sequence Architecture was generally applied to various NLP Tasks, Statistical Models outperformed Neural End-to-End models.
 This Architecture has proved its significance by opening Neural end-to-end Model Era.
-
 
 <br>
 
@@ -22,15 +23,31 @@ People live with a variety of information, but when faced with a specific proble
 The Architecture also use Encoder-Decoder architecture, but the difference is that the Decoder uses Attention Operation to make predictions.
 By using Attention Mechanism, the model could avoid Bottle Neck problem, which results in Better performances in Quantative and Qualitive Evaluation at the same time.
 
-
 <br>
 
 
 ### [Transformer](https://arxiv.org/abs/1706.03762)
 Natural Language is inevitably a time-series data. In order to consider the time series aspect, the RNN structure was considered as the only option.
-But Transformer broke this conventional prejudice and showed remarkable achievements by only using Attention Mechanism without any RNN Layer.
+But **Transformer** broke this conventional prejudice and showed remarkable achievements by only using Attention Mechanism without any RNN Layer.
 Existing RNN models always had two chronic problems. First is a vanishing gradient problem which is apparent as the sequence length gets longer. Second is Recurrent Operation process itself, which makes parallel processing difficult.
 But the Transformer solved these problems only with Attentions. As a result, the architecture not only performs well in a variety of NLP tasks, but is also fast in speed.
+
+<br>
+
+### Model Configs
+
+<table>
+  <tr>
+    <th>Seq2Seq</th>
+    <th>Attention</th>
+    <th>Transformer</th>
+  </tr>
+  <tr>
+    <td><strong> &centerdot; input dimension:</strong> 10000 <br> <strong> &centerdot; output dimension:</strong> 10000 <br> <strong> &centerdot; embedding dimension:</strong> 256 <br> <strong> &centerdot; hidden dimension:</strong> 512 <br> <strong> &centerdot; n_layers:</strong> 2 <br> <strong> &centerdot; dropout ratio:</strong> 0.5</td>
+    <td><strong> &centerdot; input dimension:</strong> 10000 <br> <strong> &centerdot; output dimension:</strong> 10000 <br> <strong> &centerdot; embedding dimension:</strong> 256 <br> <strong> &centerdot; hidden dimension:</strong> 512 <br> <strong> &centerdot; dropout ratio:</strong> 0.5</td>
+    <td><strong> &centerdot; input dimension:</strong> 10000 <br> <strong> &centerdot; output dimension:</strong> 10000 <br> <strong> &centerdot; embedding dimension:</strong> 256 <br> <strong> &centerdot; hidden dimension:</strong> 256 <br> <strong> &centerdot; pff dimension:</strong> 512 <br> <strong> &centerdot; n_layers:</strong> 3 <br> <strong> &centerdot; n_heads:</strong> 8 <br> <strong> &centerdot; dropout ratio:</strong> 0.1 </td>
+  </tr>
+</table>
 
 
 <br>
@@ -43,9 +60,9 @@ But the Transformer solved these problems only with Attentions. As a result, the
 * **Loss Function:** Cross Entropy Loss
 * **Optimizer:** Adam Optimizer
 * **Label Smoothing:** 0.1
-* **Learning Rate:** 1e-3
+* **Learning Rate:** 1e-4
 * **Batch Size:** 128
-* **Num of Epochs:** 1
+* **Num of Epochs:** 5
 * Applied Different Initialization for Each Models
 
 <br>
