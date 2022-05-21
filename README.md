@@ -60,7 +60,7 @@ But the Transformer solved these problems only with Attentions. As a result, the
 * **Loss Function:** Cross Entropy Loss
 * **Optimizer:** Adam Optimizer
 * **Label Smoothing:** 0.1
-* **Learning Rate:** 1e-4
+* **Learning Rate:** 1e-4 (LR Scheduler not applied)
 * **Batch Size:** 128
 * **Num of Epochs:** 5
 * Applied Different Initialization for Each Models
