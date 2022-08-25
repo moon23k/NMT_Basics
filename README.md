@@ -58,30 +58,30 @@ But the Transformer solved these problems only with Attentions. As a result, the
   </tr>
   <tr>
     <td>
-      <strong>&nbsp; &nbsp; &nbsp; &centerdot; Input Dimension:</strong> 10000 &nbsp; &nbsp; &nbsp;<br> 
-      <strong>&nbsp; &nbsp; &nbsp; &centerdot; Output Dimension:</strong> 10000 &nbsp; &nbsp; &nbsp;<br> 
-      <strong>&nbsp; &nbsp; &nbsp; &centerdot; Embedding Dimension:</strong> 256 &nbsp; &nbsp; &nbsp;<br> 
-      <strong>&nbsp; &nbsp; &nbsp; &centerdot; Hidden Dimension:</strong> 512 &nbsp; &nbsp; &nbsp;<br> 
-      <strong>&nbsp; &nbsp; &nbsp; &centerdot; N_Layers:</strong> 2 &nbsp; &nbsp; &nbsp;<br> 
-      <strong>&nbsp; &nbsp; &nbsp; &centerdot; Dropout Ratio:</strong> 0.5 &nbsp; &nbsp; &nbsp;
+      <strong>&nbsp; &nbsp; &centerdot; Input Dimension:</strong> 10000 &nbsp; &nbsp;<br> 
+      <strong>&nbsp; &nbsp; &centerdot; Output Dimension:</strong> 10000 &nbsp; &nbsp;<br> 
+      <strong>&nbsp; &nbsp; &centerdot; Embedding Dimension:</strong> 256 &nbsp; &nbsp;<br> 
+      <strong>&nbsp; &nbsp; &centerdot; Hidden Dimension:</strong> 512 &nbsp; &nbsp;<br> 
+      <strong>&nbsp; &nbsp; &centerdot; N_Layers:</strong> 2 &nbsp; &nbsp;<br> 
+      <strong>&nbsp; &nbsp; &centerdot; Dropout Ratio:</strong> 0.5 &nbsp; &nbsp;
     </td>
     <td>
-      <strong>&nbsp; &nbsp; &nbsp; &centerdot; Input Dimension:</strong> 10000 &nbsp; &nbsp; &nbsp;<br> 
-      <strong>&nbsp; &nbsp; &nbsp; &centerdot; Output Dimension:</strong> 10000 &nbsp; &nbsp; &nbsp;<br> 
-      <strong>&nbsp; &nbsp; &nbsp; &centerdot; Embedding Dimension:</strong> 256 &nbsp; &nbsp; &nbsp;<br> 
-      <strong>&nbsp; &nbsp; &nbsp; &centerdot; Hidden Dimension:</strong> 512 &nbsp; &nbsp; &nbsp;<br> 
-      <strong>&nbsp; &nbsp; &nbsp; &centerdot; Dropout Ratio:</strong> 0.5 &nbsp; &nbsp; &nbsp;
+      <strong>&nbsp; &nbsp; &centerdot; Input Dimension:</strong> 10000 &nbsp; &nbsp;<br> 
+      <strong>&nbsp; &nbsp; &centerdot; Output Dimension:</strong> 10000 &nbsp; &nbsp;<br> 
+      <strong>&nbsp; &nbsp; &centerdot; Embedding Dimension:</strong> 256 &nbsp; &nbsp;<br> 
+      <strong>&nbsp; &nbsp; &centerdot; Hidden Dimension:</strong> 512 &nbsp; &nbsp;<br> 
+      <strong>&nbsp; &nbsp; &centerdot; Dropout Ratio:</strong> 0.5 &nbsp; &nbsp;
     </td>
     <td>
       <br>
-      <strong>&nbsp; &nbsp; &nbsp; &centerdot; Input Dimension:</strong> 10000 &nbsp; &nbsp; &nbsp;<br> 
-      <strong>&nbsp; &nbsp; &nbsp; &centerdot; Output Dimension:</strong> 10000 &nbsp; &nbsp; &nbsp;<br> 
-      <strong>&nbsp; &nbsp; &nbsp; &centerdot; Embedding Dimension:</strong> 256 &nbsp; &nbsp; &nbsp;<br> 
-      <strong>&nbsp; &nbsp; &nbsp; &centerdot; Hidden Dimension:</strong> 256 &nbsp; &nbsp; &nbsp;<br> 
-      <strong>&nbsp; &nbsp; &nbsp; &centerdot; PFF Dimension:</strong> 512 &nbsp; &nbsp; &nbsp;<br> 
-      <strong>&nbsp; &nbsp; &nbsp; &centerdot; N_Layers:</strong> 3 &nbsp; &nbsp; &nbsp;<br> 
-      <strong>&nbsp; &nbsp; &nbsp; &centerdot; N_Heads:</strong> 8 &nbsp; &nbsp; &nbsp;<br> 
-      <strong>&nbsp; &nbsp; &nbsp; &centerdot; Dropout Ratio:</strong> 0.1 &nbsp; &nbsp; &nbsp;<br>
+      <strong>&nbsp; &nbsp; &centerdot; Input Dimension:</strong> 10000 &nbsp; &nbsp;<br> 
+      <strong>&nbsp; &nbsp; &centerdot; Output Dimension:</strong> 10000 &nbsp; &nbsp;<br> 
+      <strong>&nbsp; &nbsp; &centerdot; Embedding Dimension:</strong> 256 &nbsp; &nbsp;<br> 
+      <strong>&nbsp; &nbsp; &centerdot; Hidden Dimension:</strong> 256 &nbsp; &nbsp;<br> 
+      <strong>&nbsp; &nbsp; &centerdot; PFF Dimension:</strong> 512 &nbsp; &nbsp;<br> 
+      <strong>&nbsp; &nbsp; &centerdot; N_Layers:</strong> 3 &nbsp; &nbsp;<br> 
+      <strong>&nbsp; &nbsp; &centerdot; N_Heads:</strong> 8 &nbsp; &nbsp;<br> 
+      <strong>&nbsp; &nbsp; &centerdot; Dropout Ratio:</strong> 0.1 &nbsp; &nbsp;
       <br>
     </td>
   </tr>
