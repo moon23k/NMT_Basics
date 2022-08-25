@@ -58,30 +58,30 @@ But the Transformer solved these problems only with Attentions. As a result, the
   </tr>
   <tr>
     <td>
-      <strong>&nbsp; &nbsp; &centerdot; Input Dimension:</strong> 10000 &nbsp; &nbsp;<br> 
-      <strong>&nbsp; &nbsp; &centerdot; Output Dimension:</strong> 10000 &nbsp; &nbsp;<br> 
-      <strong>&nbsp; &nbsp; &centerdot; Embedding Dimension:</strong> 256 &nbsp; &nbsp;<br> 
-      <strong>&nbsp; &nbsp; &centerdot; Hidden Dimension:</strong> 512 &nbsp; &nbsp;<br> 
-      <strong>&nbsp; &nbsp; &centerdot; N_Layers:</strong> 2 &nbsp; &nbsp;<br> 
-      <strong>&nbsp; &nbsp; &centerdot; Dropout Ratio:</strong> 0.5 &nbsp; &nbsp;
+      <strong>&nbsp; &centerdot; Input Dimension:</strong> 10000 &nbsp;<br> 
+      <strong>&nbsp; &centerdot; Output Dimension:</strong> 10000 &nbsp;<br> 
+      <strong>&nbsp; &centerdot; Embedding Dimension:</strong> 256 &nbsp;<br> 
+      <strong>&nbsp; &centerdot; Hidden Dimension:</strong> 512 &nbsp;<br> 
+      <strong>&nbsp; &centerdot; N_Layers:</strong> 2 &nbsp;<br> 
+      <strong>&nbsp; &centerdot; Dropout Ratio:</strong> 0.5 &nbsp;
     </td>
     <td>
-      <strong>&nbsp; &nbsp; &centerdot; Input Dimension:</strong> 10000 &nbsp; &nbsp;<br> 
-      <strong>&nbsp; &nbsp; &centerdot; Output Dimension:</strong> 10000 &nbsp; &nbsp;<br> 
-      <strong>&nbsp; &nbsp; &centerdot; Embedding Dimension:</strong> 256 &nbsp; &nbsp;<br> 
-      <strong>&nbsp; &nbsp; &centerdot; Hidden Dimension:</strong> 512 &nbsp; &nbsp;<br> 
-      <strong>&nbsp; &nbsp; &centerdot; Dropout Ratio:</strong> 0.5 &nbsp; &nbsp;
+      <strong>&nbsp; &centerdot; Input Dimension:</strong> 10000 &nbsp;<br> 
+      <strong>&nbsp; &centerdot; Output Dimension:</strong> 10000 &nbsp;<br> 
+      <strong>&nbsp; &centerdot; Embedding Dimension:</strong> 256 &nbsp;<br> 
+      <strong>&nbsp; &centerdot; Hidden Dimension:</strong> 512 &nbsp;<br> 
+      <strong>&nbsp; &centerdot; Dropout Ratio:</strong> 0.5 &nbsp;
     </td>
     <td>
       <br>
-      <strong>&nbsp; &nbsp; &centerdot; Input Dimension:</strong> 10000 &nbsp; &nbsp;<br> 
-      <strong>&nbsp; &nbsp; &centerdot; Output Dimension:</strong> 10000 &nbsp; &nbsp;<br> 
-      <strong>&nbsp; &nbsp; &centerdot; Embedding Dimension:</strong> 256 &nbsp; &nbsp;<br> 
-      <strong>&nbsp; &nbsp; &centerdot; Hidden Dimension:</strong> 256 &nbsp; &nbsp;<br> 
-      <strong>&nbsp; &nbsp; &centerdot; PFF Dimension:</strong> 512 &nbsp; &nbsp;<br> 
-      <strong>&nbsp; &nbsp; &centerdot; N_Layers:</strong> 3 &nbsp; &nbsp;<br> 
-      <strong>&nbsp; &nbsp; &centerdot; N_Heads:</strong> 8 &nbsp; &nbsp;<br> 
-      <strong>&nbsp; &nbsp; &centerdot; Dropout Ratio:</strong> 0.1 &nbsp; &nbsp;
+      <strong>&nbsp; &centerdot; Input Dimension:</strong> 10000 &nbsp;<br> 
+      <strong>&nbsp; &centerdot; Output Dimension:</strong> 10000 &nbsp;<br> 
+      <strong>&nbsp; &centerdot; Embedding Dimension:</strong> 256 &nbsp;<br> 
+      <strong>&nbsp; &centerdot; Hidden Dimension:</strong> 256 &nbsp;<br> 
+      <strong>&nbsp; &centerdot; PFF Dimension:</strong> 512 &nbsp;<br> 
+      <strong>&nbsp; &centerdot; N_Layers:</strong> 3 &nbsp;<br> 
+      <strong>&nbsp; &centerdot; N_Heads:</strong> 8 &nbsp;<br> 
+      <strong>&nbsp; &centerdot; Dropout Ratio:</strong> 0.1 &nbsp;<br>
       <br>
     </td>
   </tr>
@@ -91,14 +91,14 @@ But the Transformer solved these problems only with Attentions. As a result, the
 
 ### Training Configs
 
-* **Data:** downsized WMT14 EN-DE dataset (4.5M -> 450K)
-* **Tokenization:** Applied Moses Tokenization first, and then applied BPE Tokenziation
-* **Loss Function:** Cross Entropy Loss
-* **Optimizer:** Adam Optimizer
-* **Label Smoothing:** 0.1
-* **Learning Rate:** 1e-4 (LR Scheduler not applied)
 * **Batch Size:** 128
-* **Num of Epochs:** 5
+* **Num of Epochs:** 10
+* **Learning Rate:** 1e-4
+* **Label Smoothing:** 0.1
+* **Optimizer:** Adam Optimizer
+* **Tokenization:** BPE Tokenziation
+* **Loss Function:** Cross Entropy Loss
+* **Data:** downsized WMT14 EN-DE dataset (4.5M -> 450K)
 * Applied Different Initialization for Each Models
 
 <br>
