@@ -1,12 +1,22 @@
-# NMT_Basics
+## NMT_Basics
 This repo covers Basic Models for Neural Machine Translation Task.
 The main purpose is to check the developments while comparing each model.
 For a fairer comparision, some modifications are applied and as a result, some parts may differ from those in papers.
 
 <br>
 
+### Table of Contents
+  * [Model desc](#model-desc)
+  * [Model Configs](#model-configs)
+  * [Training Setup](#training-setup)
+  * [How to Use](#how-to-use)
+  * [Results](#results)
+  * [References](#references)
 
-## Models desc
+<br>
+
+
+## Model desc
 
 ### [Sequence-to-Sequence](https://arxiv.org/abs/1409.3215)
 As the name **"Sequence-to-Sequence"** suggests, it is an end-to-end sequence model.
@@ -137,7 +147,7 @@ python3 inference.py -model ['seq2seq', 'attention', 'transformer']
 <br>
 <br>
 
-## Reference
+## References
 * Sequence to Sequence Learning with Neural Networks
 * Neural Machine Translation by Jointly Learning to Align and Translate
 * Attention is all you need
