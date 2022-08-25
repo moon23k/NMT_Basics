@@ -1,18 +1,16 @@
 import torch.nn as nn
 import math, time, torch
 from modules.search import Search
-from modules.utils import load_tokenizer
 from torchtext.data.metrics import bleu_score
 
 
 
-
 class Tester(Search):
-    def __init__(self, config, model, test_dataloader):
+    def __init__(self, config, model, dataloader, tokenizer):
         super(Tester, self).__init__(config, model)
         self.model = model
-        self.dataloader = test_dataloader
-        self.tokenizer = load_tokenizer('de')
+        self.tokenizer = tokenizer
+        self.dataloader = dataloader
 
         self.device = config.device
         self.pad_idx = config.pad_idx

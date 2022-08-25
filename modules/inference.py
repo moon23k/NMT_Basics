@@ -1,17 +1,17 @@
 import torch
-from modules.utils import load_tokenizer
+
 
 
 class Translator:
-	def __init__(self, config, model):
+	def __init__(self, config, model, src_tokenizer, trg_tokenizer):
 		self.model = model
 		self.max_len = 100
 		self.device = config.device
 		self.search = config.search
 		self.bos_idx = config.bos_idx
+		self.src_tokenizer = src_tokenizer
+		self.trg_tokenizer = trg_tokenizer
 		self.model_name == config.model_name
-		self.src_tokenizer = load_tokenizer('src')
-		self.trg_tokenizer = load_tokenizer('trg')
 
 	
 	def tranaslate(self, config):

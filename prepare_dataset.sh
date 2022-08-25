@@ -13,4 +13,4 @@ for split in "${splits[@]}"; do
 done
 
 cd ..
-python3 modules/data_process.py
+python3 utils/data_process.py
