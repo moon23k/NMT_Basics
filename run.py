@@ -14,7 +14,6 @@ from models.transformer import Transformer
 from modules.test import Tester
 from modules.train import Trainer
 from modules.inference import Translator
-
 from modules.data import load_dataloader
 
 
