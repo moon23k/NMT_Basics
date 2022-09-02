@@ -11,7 +11,7 @@ def read_json(f_name):
 
 
 class NMTDataset(Dataset):
-    def __init__(self, split, config):
+    def __init__(self, config, split):
         super().__init__()
         self.model_name = config.model_name
         self.data = read_json(f'{split}.json')
@@ -71,8 +71,8 @@ def transformer_collate(batch):
 
 
 
-def load_dataloader(split, config):
-    dataset = NMTDataset(split, config)
+def load_dataloader(config, split):
+    dataset = NMTDataset(config, split)
     
     if config.model_name == 'transformer':
         return DataLoader(dataset, 

@@ -43,7 +43,7 @@ class Search:
             src = src.unsqueeze(0)
 
         if self.model_name == 'seq2seq':
-            _, hiddens = self.model.encoder(src)
+            hiddens = self.model.encoder(src)
             return hiddens
         elif self.model_name == 'transformer':
             src_masks = self.model.pad_mask(src)
@@ -62,7 +62,6 @@ class Search:
         elif self.model_name == 'transformer':
             dec_out = self.model.decoder(curr_node.pred.unsqueeze(0), memory, src_mask, curr_node.pred_mask)
             out = self.model.fc_out(dec_out)[:, -1, :]
-            #print(f'out.shape: {out.shape}')
             logits, preds = torch.topk(out, self.beam_size)
             logits, preds = logits.squeeze(1), preds.squeeze(1)
             log_probs = F.log_softmax(logits, dim=-1)
@@ -100,7 +99,6 @@ class Search:
 
         elif self.model_name == 'transformer':
             for k in range(self.beam_size):
-                #print(f'by the way.. k == {k}')
                 pred = preds[0][k].view(1)
                 log_prob = log_probs[0][k].item()
                 new_pred = torch.cat([curr_node.pred, pred])

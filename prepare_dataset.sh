@@ -1,5 +1,6 @@
 #!/bin/bash
-mkdir -p data
+mkdir -p data ckpt
+rm data/.gitkeep ckpt/.gitkeep
 cd data
 
 splits=(train val test_2016_flickr)

@@ -1,7 +1,7 @@
 import time, math, json, torch
 import torch.nn as nn
 import torch.optim as optim
-from collections import namedtuple
+from collections import namedtuple, defaultdict
 
 
 class Trainer:
@@ -37,10 +37,11 @@ class Trainer:
                                                          gamma=0.97,
                                                          cycle_momentum=False)
         
-        self.ckpt_path = f'ckpt/{self.model_name}_{config.scheduler}.pt'
-        self.record_path = f"ckpt/{self.model_name}_{config.scheduler}.json"
+        self.ckpt_path = f'ckpt/{self.model_name}.pt'
+        self.record_path = f"ckpt/{self.model_name}.json"
         self.record_keys = ['epoch', 'train_loss', 'train_ppl',
-                            'valid_loss', 'valid_ppl', 'train_time']
+                            'valid_loss', 'valid_ppl', 
+                            'learning_rate', 'train_time']
 
 
     def print_epoch(self, record_dict):
@@ -53,6 +54,7 @@ class Trainer:
         print(f"""  >> Valid Loss: {record_dict['valid_loss']:.3f} | \
               Valid PPL: {record_dict['valid_ppl']:.2f}\n""".replace(' ' * 14, ''))
 
+
     @staticmethod
     def measure_time(start_time, end_time):
         elapsed_time = end_time - start_time
@@ -60,11 +62,14 @@ class Trainer:
         elapsed_sec = int(elapsed_time - (elapsed_min * 60))
         return f"{elapsed_min}m {elapsed_sec}s"
 
+
     def train(self):
         best_bleu, records = float('inf'), []
         for epoch in range(1, self.n_epochs + 1):
             start_time = time.time()
+
             record_vals = [epoch, *self.train_epoch(), *self.valid_epoch(), 
+                           self.optimizer.param_groups[0]['lr'],
                            self.measure_time(start_time, time.time())]
             record_dict = {k: v for k, v in zip(self.record_keys, record_vals)}
             
@@ -89,14 +94,14 @@ class Trainer:
 
     def train_epoch(self):
         self.model.train()
-        epoch_loss, teacher_forcing_ratio = 0, 0.5
+        epoch_loss = 0
         tot_len = len(self.train_dataloader)
 
         for _, batch in enumerate(self.train_dataloader):
             src, trg = batch['src'].to(self.device), batch['trg'].to(self.device)
             
             if self.model_name != 'transformer':
-                logit = self.model(src, trg, teacher_forcing_ratio)
+                logit = self.model(src, trg, teacher_forcing_ratio=0.5)
             elif self.model_name == 'transformer':
                 logit = self.model(src, trg[:, :-1])
 

@@ -1,6 +1,6 @@
 import numpy as np
-import yaml, random
 import sentencepiece as spm
+import yaml, random, argparse
 
 import torch
 import torch.nn as nn
@@ -21,14 +21,14 @@ from modules.data import load_dataloader
 
 class Config(object):
     def __init__(self, args):    
-        with open('configs.yaml', 'r') as f:
+        with open('configs/model.yaml', 'r') as f:
             params = yaml.load(f, Loader=yaml.FullLoader)
             params = params[args.model]
             for p in params.items():
                 setattr(self, p[0], p[1])
 
         self.task = args.task
-        self.model_name = args.model_name
+        self.model_name = args.model
         
         self.unk_idx = 0
         self.pad_idx = 1
@@ -38,6 +38,9 @@ class Config(object):
         self.clip = 1
         self.n_epochs = 1
         self.batch_size = 128
+
+        if self.task != 'train':
+            self.ckpt = f'ckpt/{self.model_name}.pt'
 
         if self.task == 'train':
             self.optimizer = optim.Adam(self.model.parameters(), lr=self.learning_rate)
@@ -89,7 +92,7 @@ def load_model(config):
         model = Transformer(config)
 
     if config.task != 'train':
-        model_state = torch.load(config.ckpt, map_location=config.device)['model_state_dict']
+        model_state = torch.load(config.ckpt_path, map_location=config.device)['model_state_dict']
         model.load_state_dict(model_state)
 
     return model.to(config.device)
@@ -99,19 +102,19 @@ def load_model(config):
 def main(config):
     model = load_model(config)
 
-    if config.mode == 'train':
-        train_dataloader = load_dataloader('train')
-        valid_dataloader = load_dataloader('valid')        
+    if config.task == 'train':
+        train_dataloader = load_dataloader(config, 'train')
+        valid_dataloader = load_dataloader(config, 'valid')        
         trainer = Trainer(model, config, train_dataloader, valid_dataloader)
         trainer.train()
     
-    elif config.mode == 'test':
-        test_dataloader = load_dataloader('test')
+    elif config.task == 'test':
+        test_dataloader = load_dataloader(config, 'test')
         trg_tokenizer = load_tokenizer('de')
         tester = Tester(config, model, test_dataloader, trg_tokenizer)
         tester.test()
     
-    elif config.mode == 'inference':
+    elif config.task == 'inference':
         src_tokenizer = load_tokenizer('en')
         trg_tokenizer = load_tokenizer('de')
         translator = Translator(model, config, src_tokenizer, trg_tokenizer)
@@ -121,7 +124,7 @@ def main(config):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-Task', required=True)
+    parser.add_argument('-task', required=True)
     parser.add_argument('-model', required=True)
     parser.add_argument('-scheduler', required=False)
     
