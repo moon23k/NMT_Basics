@@ -37,47 +37,42 @@ Existing RNN models always had two chronic problems. First is a vanishing gradie
 But the Transformer solved these problems only with Attentions. As a result, the architecture not only performs well in a variety of NLP tasks, but is also fast in speed.
 
 <br>
-
-
-<br>
 <br>
 
-## Configs
+## Configurations
 
 > **Model Configs**
 
 |  | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `Seq2Seq` &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `Attention` &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `Transformer` &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |
 | :--- | :---: | :---: | :---: |
-| `Input Dimension` | 10,000 | 10,000 | 10,000 |
-| `Output Dimension` | 10,000 | 10,000 | 10,000 |
-| `Embedding Dimension` | 256 | 256 | 256 |
-| `Hidden Dimension` | 512 | 512 | 512 |
-| `PFF Dimension` | - | - | 1024 |
-| `N Layers` | 2 | - | 3 |
-| `N Heads` | - | - | 8 |
-| `Dropout Ratio` | 0.5 | 0.5 | 0.1 |
-                                                      
+| **`Input Dimension`** | 10,000 | 10,000 | 10,000 |
+| **`Output Dimension`** | 10,000 | 10,000 | 10,000 |
+| **`Embedding Dimension`** | 256 | 256 | 256 |
+| **`Hidden Dimension`** | 512 | 512 | 512 |
+| **`PFF Dimension`** | - | - | 1024 |
+| **`N Layers`** | 2 | - | 3 |
+| **`N Heads`** | - | - | 8 |
+| **`Dropout Ratio`** | 0.5 | 0.5 | 0.1 |
 
+<br>
 <br>
 
 > **Training Configs**
 
-**`Learning Rate: 1e-4`**
-**`Num of Epochs: 10`**
-**`Label Smoothing: 0.1`** 
-**`Data: downsized WMT14 EN-DE dataset (4.5M -> 450K)`**
-
-**`Batch Size: 128`** 
-**`Optimizer: Adam Optimizer`** 
-**`Tokenization: BPE Tokenziation`** 
-**`Loss Function: Cross Entropy Loss`**
-
-`Applied Different Initialization for Each Models`
+* **Batch Size:** 128 </br>
+* **Num of Epochs:** 10 </br>
+* **Learning Rate:** 1e-4 </br>
+* **Label Smoothing:** 0.1 </br>
+* **Optimizer:** Adam Optimizer </br>
+* **Tokenization:** BPE Tokenziation </br>
+* **Loss Function:** Cross Entropy Loss </br>
+* **Data:** downsized WMT14 EN-DE dataset (4.5M -> 450K) </br>
+* Applied Different Initialization for Each Models
 
 <br>
 
 <center>
-  <img src="https://user-images.githubusercontent.com/71929682/168110116-374d3ac9-48d6-41e3-a2ce-d216f2e76422.png" width="90%" height="60%">
+  <img src="https://user-images.githubusercontent.com/71929682/168110116-374d3ac9-48d6-41e3-a2ce-d216f2e76422.png" width="80%" height="60%">
 </center>
 
 
