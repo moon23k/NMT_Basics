@@ -5,19 +5,14 @@ For a fairer comparision, some modifications are applied and as a result, some p
 
 <br>
 
-## Table of Contents
-  * [Model desc](#model-desc)
-  * [Configs](#configs)
-  * [How to Use](#how-to-use)
-  * [Results](#results)
-  * [References](#references)
-
-<br>
+### Table of Contents
+> **[Model desc](#model-desc)** &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **[Configs](#configs)** &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **[How to Use](#how-to-use)** &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **[Results](#results)** &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **[References](#references)**
+</br>
 
 
 ## Model desc
 
-### [Sequence-to-Sequence](https://arxiv.org/abs/1409.3215)
+**[Sequence-to-Sequence](https://arxiv.org/abs/1409.3215)**
 > As the name **"Sequence-to-Sequence"** suggests, it is an end-to-end sequence model.
 The Architecture consists of Encoder and Decoder. In detail, the Encoder first makes Contetx Vectors from Input Sequences. 
 And then the Decoder gets Encoder Outputs and Auto Regressive Values from Target sequences as an Input Values to return Target Sequences.
@@ -26,7 +21,7 @@ This Architecture has proved its significance by opening Neural end-to-end Model
 
 <br>
 
-### [Attention Mechanism](https://arxiv.org/abs/1409.0473)
+**[Attention Mechanism](https://arxiv.org/abs/1409.0473)**
 > The main idea of Attention Mechanism came from Human's Brain Cognition Process.
 People live with a variety of information, but when faced with a specific problem, people usually focus on the information needed to solve the problem. We call this as an **Attention**.
 The Architecture also use Encoder-Decoder architecture, but the difference is that the Decoder uses Attention Operation to make predictions.
@@ -35,7 +30,7 @@ By using Attention Mechanism, the model could avoid Bottle Neck problem, which r
 <br>
 
 
-### [Transformer](https://arxiv.org/abs/1706.03762)
+**[Transformer](https://arxiv.org/abs/1706.03762)**
 > Natural Language is inevitably a time-series data. In order to consider the time series aspect, the RNN structure was considered as the only option.
 But **Transformer** broke this conventional prejudice and showed remarkable achievements by only using Attention Mechanism without any RNN Layer.
 Existing RNN models always had two chronic problems. First is a vanishing gradient problem which is apparent as the sequence length gets longer. Second is Recurrent Operation process itself, which makes parallel processing difficult.
@@ -48,63 +43,41 @@ But the Transformer solved these problems only with Attentions. As a result, the
 <br>
 
 ## Configs
-### Model Configs
 
-<table>
-  <tr>
-    <th>Seq2Seq</th>
-    <th>Attention</th>
-    <th>Transformer</th>
-  </tr>
-  <tr>
-    <td>
-      <strong>&nbsp; &centerdot; Input Dimension:</strong> 10000 &nbsp;<br> 
-      <strong>&nbsp; &centerdot; Output Dimension:</strong> 10000 &nbsp;<br> 
-      <strong>&nbsp; &centerdot; Embedding Dimension:</strong> 256 &nbsp;<br> 
-      <strong>&nbsp; &centerdot; Hidden Dimension:</strong> 512 &nbsp;<br> 
-      <strong>&nbsp; &centerdot; N_Layers:</strong> 2 &nbsp;<br> 
-      <strong>&nbsp; &centerdot; Dropout Ratio:</strong> 0.5 &nbsp;
-    </td>
-    <td>
-      <strong>&nbsp; &centerdot; Input Dimension:</strong> 10000 &nbsp;<br> 
-      <strong>&nbsp; &centerdot; Output Dimension:</strong> 10000 &nbsp;<br> 
-      <strong>&nbsp; &centerdot; Embedding Dimension:</strong> 256 &nbsp;<br> 
-      <strong>&nbsp; &centerdot; Hidden Dimension:</strong> 512 &nbsp;<br> 
-      <strong>&nbsp; &centerdot; Dropout Ratio:</strong> 0.5 &nbsp;
-    </td>
-    <td>
-      <br>
-      <strong>&nbsp; &centerdot; Input Dimension:</strong> 10000 &nbsp;<br> 
-      <strong>&nbsp; &centerdot; Output Dimension:</strong> 10000 &nbsp;<br> 
-      <strong>&nbsp; &centerdot; Embedding Dimension:</strong> 256 &nbsp;<br> 
-      <strong>&nbsp; &centerdot; Hidden Dimension:</strong> 256 &nbsp;<br> 
-      <strong>&nbsp; &centerdot; PFF Dimension:</strong> 512 &nbsp;<br> 
-      <strong>&nbsp; &centerdot; N_Layers:</strong> 3 &nbsp;<br> 
-      <strong>&nbsp; &centerdot; N_Heads:</strong> 8 &nbsp;<br> 
-      <strong>&nbsp; &centerdot; Dropout Ratio:</strong> 0.1 &nbsp;<br>
-      <br>
-    </td>
-  </tr>
-</table>
+> **Model Configs**
+
+|  | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `Seq2Seq` &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `Attention` &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `Transformer` &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |
+| :--- | :---: | :---: | :---: |
+| `Input Dimension` | 10,000 | 10,000 | 10,000 |
+| `Output Dimension` | 10,000 | 10,000 | 10,000 |
+| `Embedding Dimension` | 256 | 256 | 256 |
+| `Hidden Dimension` | 512 | 512 | 512 |
+| `PFF Dimension` | - | - | 1024 |
+| `N Layers` | 2 | - | 3 |
+| `N Heads` | - | - | 8 |
+| `Dropout Ratio` | 0.5 | 0.5 | 0.1 |
+                                                      
 
 <br>
 
-### Training Configs
+> **Training Configs**
 
-* **Batch Size:** 128
-* **Num of Epochs:** 10
-* **Learning Rate:** 1e-4
-* **Label Smoothing:** 0.1
-* **Optimizer:** Adam Optimizer
-* **Tokenization:** BPE Tokenziation
-* **Loss Function:** Cross Entropy Loss
-* **Data:** downsized WMT14 EN-DE dataset (4.5M -> 450K)
-* Applied Different Initialization for Each Models
+**`Learning Rate: 1e-4`**
+**`Num of Epochs: 10`**
+**`Label Smoothing: 0.1`** 
+**`Data: downsized WMT14 EN-DE dataset (4.5M -> 450K)`**
+
+**`Batch Size: 128`** 
+**`Optimizer: Adam Optimizer`** 
+**`Tokenization: BPE Tokenziation`** 
+**`Loss Function: Cross Entropy Loss`**
+
+`Applied Different Initialization for Each Models`
 
 <br>
 
 <center>
-  <img src="https://user-images.githubusercontent.com/71929682/168110116-374d3ac9-48d6-41e3-a2ce-d216f2e76422.png" width="70%" height="60%">
+  <img src="https://user-images.githubusercontent.com/71929682/168110116-374d3ac9-48d6-41e3-a2ce-d216f2e76422.png" width="90%" height="60%">
 </center>
 
 
@@ -146,22 +119,17 @@ python3 test.py -model ['seq2seq', 'attention', 'transformer']
 python3 inference.py -model ['seq2seq', 'attention', 'transformer']
 ```
 
-
 <br>
 <br>
 
 
 ## Results
 
-**Loss**
+<center>
+  <img src="https://user-images.githubusercontent.com/71929682/188311738-ec98d7c4-f10c-4b5d-aa8a-c538c58d974b.png" width="90%" height="70%">
+</center>
 
 <br>
-
-**PPL**
-
-<br>
-
-**BLEU**
 
 <br>
 <br>
