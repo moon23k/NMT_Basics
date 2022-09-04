@@ -4,8 +4,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
+
 def get_clones(module, N):
     return nn.ModuleList([copy.deepcopy(module) for _ in range(N)])
+
 
 class TokenEmbedding(nn.Module):
     def __init__(self, config):
@@ -166,7 +168,6 @@ class Transformer(nn.Module):
         self.encoder = Encoder(config)
         self.decoder = Decoder(config)
         self.fc_out = nn.Linear(config.hidden_dim, config.output_dim)
-        self.apply(self._init_weights)
 
     def forward(self, src, trg):
         src_mask, trg_mask = self.pad_mask(src), self.dec_mask(trg)
@@ -181,7 +182,3 @@ class Transformer(nn.Module):
         pad_mask = self.pad_mask(x)
         sub_mask = torch.tril(torch.ones((x.size(-1), x.size(-1)))).bool().to(self.device)
         return pad_mask & sub_mask
-
-    def _init_weights(self, module):
-        if hasattr(module, 'weight') and module.weight.dim() > 1:
-            nn.init.xavier_uniform_(module.weight.data)

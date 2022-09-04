@@ -38,25 +38,16 @@ class Config(object):
         self.clip = 1
         self.n_epochs = 1
         self.batch_size = 128
-
-        if self.task != 'train':
-            self.ckpt = f'ckpt/{self.model_name}.pt'
-
-        if self.task == 'train':
-            self.optimizer = optim.Adam(self.model.parameters(), lr=self.learning_rate)
-            if self.scheduler == 'constant':
-                self.learning_rate = 1e-3
-                self.scheduler = None
-            elif self.scheduler == 'noam':
-                self.learning_rate = 1e-3
-                self.scheduler = optim.lr_scheduler()
+        
+        if self.model_name == 'transformer':
+            self.learning_rate = 1e-3
+        else:
+            self.learning_rate = 1e-4
 
         if self.task == 'inference':
             self.device = torch.device('cpu')
         else:
             self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-        self.criterion = nn.CrossEntropyLoss(ignore_index=self.pad_idx, label_smoothing=0.1).to(self.device)
 
     def print_attr(self):
         for attribute, value in self.__dict__.items():
@@ -82,15 +73,36 @@ def load_tokenizer(lang):
     return tokenizer
 
 
+def init_uniform(model):
+    for name, param in model.named_parameters():
+        nn.init.uniform_(param.data, -0.08, 0.08)
+
+
+
+def init_normal(model):
+    for name, param in model.named_parameters():
+        if 'weight' in name:
+            nn.init.normal_(param.data, mean=0, std=0.01)
+        else:
+            nn.init.constant_(param.data, 0)
+
+
+def init_xavier(model):
+    if hasattr(model, 'weight') and model.weight.dim() > 1:
+        nn.init.xavier_uniform_(model.weight.data)
+
 
 def load_model(config):
     if config.model_name == 'seq2seq':
         model = Seq2Seq(config)
+        model.apply(init_uniform)
     elif config.model_name == 'attention':
         model = Seq2SeqAttn(config)
+        model.apply(init_normal)
     elif config.model_name == 'transformer':
         model = Transformer(config)
-
+        model.apply(init_xavier)
+        
     if config.task != 'train':
         model_state = torch.load(config.ckpt_path, map_location=config.device)['model_state_dict']
         model.load_state_dict(model_state)

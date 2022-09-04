@@ -4,13 +4,13 @@ from queue import PriorityQueue
 from collections import namedtuple
 
 
-
 class Search:
     def __init__(self, config, model):
         self.beam_size = 4
         self.device = config.device
         self.bos_idx = config.bos_idx
         self.eos_idx = config.eos_idx
+        self.pad_idx = config.pad_idx
         self.output_dim = config.output_dim
         self.model_name = config.model_name
         
@@ -24,10 +24,10 @@ class Search:
             self.Node = namedtuple('Node', ['prev_node', 'pred', 'pred_mask', 'log_prob', 'length'])
 
 
-    def beam_score(self, node, min_length=5, alpha=1.2, no_repeat_ngram_size=3):
-        overlap_dict = dict(map(lambda el  : (el, node.pred.tolist().count(el)), node.pred.tolist()))
+    def beam_score(self, node, no_repeat_ngram_size, min_length=5, alpha=1.2):
+        overlap = max([node.pred.tolist().count(token) for token in node.pred.tolist() if token != self.pad_idx])
 
-        if max(overlap_dict.values()) >= no_repeat_ngram_size:
+        if overlap > no_repeat_ngram_size:
             overlap_penalty = -1
         else:
             overlap_penalty = 1
@@ -74,14 +74,17 @@ class Search:
                       hiddens[1][:, idx, :].unsqueeze(1).contiguous())
             return hidden
 
+        elif self.model_name == 'attention':
+            hidden = hiddens[:, idx, :].unsqueeze(1).contiguous()
+            return hidden
+        
         elif self.model_name == 'transformer':
             memory = memories[idx, :, :].unsqueeze(0).contiguous()
             src_mask = src_masks[idx, :, :].unsqueeze(0).contiguous()
             return memory, src_mask
 
 
-
-    def add_nodes(self, curr_node, logits, preds, log_probs, _hidden=None):
+    def add_nodes(self, curr_node, logits, preds, log_probs, no_repeat_ngram_size, _hidden=None):
         Node = self.Node
         if self.model_name == 'seq2seq':
             for k in range(self.beam_size):
@@ -94,7 +97,7 @@ class Search:
                                  pred = pred.contiguous(),
                                  preds = curr_node.preds + [pred.item()],
                                  length = curr_node.length + 1)
-                next_score = self.beam_score(next_node)
+                next_score = self.beam_score(next_node, no_repeat_ngram_size)
                 nodes.put((next_score, next_node))
 
         elif self.model_name == 'transformer':
@@ -107,9 +110,9 @@ class Search:
                 next_node = Node(prev_node = curr_node,
                                  pred = new_pred,
                                  pred_mask = new_pred_mask,
-                                 log_prob = log_prob,
+                                 log_prob = curr_node.log_prob + log_prob,
                                  length = curr_node.length + 1)
-                next_score = self.beam_score(next_node)
+                next_score = self.beam_score(next_node, no_repeat_ngram_size)                
                 nodes.put((next_score, next_node))
 
 
@@ -129,6 +132,7 @@ class Search:
         outputs = []
         batch_size, max_len = trg.shape
         start_tensor = torch.LongTensor([self.bos_idx]).to(self.device)
+        overlaps = [max([seq.count(token) for token in seq if token != self.pad_idx]) for seq in src.tolist()]
 
         if self.model_name == 'seq2seq':
             hiddens = self._encode(src)
@@ -137,7 +141,7 @@ class Search:
         elif self.model_name == 'transformer':
             memories, src_masks = self._encode(src)
             Node = self.Node
-
+        
         for idx in range(batch_size):
             if self.model_name == 'seq2seq':
                 hidden = self.select_vector(idx=idx, hiddens=hiddens)
@@ -178,10 +182,10 @@ class Search:
                         
                     if self.model_name == 'seq2seq':
                         logits, preds, log_probs, _hidden = self._decode(curr_node)
-                        self.add_nodes(curr_node, logits, preds, log_probs, _hidden)
+                        self.add_nodes(curr_node, logits, preds, log_probs, overlaps[idx], _hidden)
                     elif self.model_name == 'transformer':
                         logits, preds, log_probs = self._decode(curr_node, memory, src_mask)
-                        self.add_nodes(curr_node, logits, preds, log_probs)
+                        self.add_nodes(curr_node, logits, preds, log_probs, overlaps[idx])
 
                     if not t:
                         break
