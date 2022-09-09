@@ -99,6 +99,25 @@ def load_tokenizer(lang):
     return tokenizer
 
 
+
+
+def download_data():
+    return
+
+
+def process_data():
+
+
+def main():
+    return
+
+
+
+
+
+
+
+
 if __name__ == '__main__':
     for split in ['train', 'valid', 'test']:
         text2json(split)
