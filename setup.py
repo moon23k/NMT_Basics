@@ -1,141 +1,139 @@
-import os, json, yaml
+import os, json, yaml, argparse
 import sentencepiece as spm
+from datasets import load_dataset
 
 
 
-def read_text(f_name):
-    with open(f"data/{f_name}", 'r') as f:
-        data = f.readlines()
-    return data
-
-
-def read_json(split):
-    with open(f'data/{split}.json', 'r') as f:
-        data = json.load(f)
-    return data
-
-
-def save_json(split, data):
-    with open(f"data/{split}.json", 'w') as f:
-        json.dump(data, f)    
-
-
-def text2json(split):
-    fname_dict = {'train': 'train', 'valid': 'val', 'test': 'test_2016_flickr'}
-    
-    src_text = read_text(f"{fname_dict[split]}.en")
-    trg_text = read_text(f"{fname_dict[split]}.de")
-
-    json_dict = []
-    for src, trg in zip(src_text, trg_text):
-        temp_dict = dict()
-        temp_dict['src'] = src.strip()
-        temp_dict['trg'] = trg.strip()
-        json_dict.append(temp_dict)
-    
-    save_json(split, json_dict)
-
-    os.remove(f'data/{fname_dict[split]}.en')
-    os.remove(f'data/{fname_dict[split]}.de')
-
-
-def create_concats():
+def concat_data(train, valid, test):
     src, trg = [], []
-    for split in ['train', 'valid', 'test']:
-        data = read_json(split)
+    for split in (train, valid, test):
+        for elem in split:
+            src.append(elem['en'])
+            trg.append(elem['de'])
 
-        for elem in data:
-            src.append(elem['src'])
-            trg.append(elem['trg'])
-
-    with open('data/en_concat.txt', 'w') as f:
+    with open('data/src.txt', 'w') as f:
         f.write('\n'.join(src))
-    with open('data/de_concat.txt', 'w') as f:
+    with open('data/trg.txt', 'w') as f:
         f.write('\n'.join(trg))
 
 
-def build_vocab(lang):
-    assert os.path.exists('configs/vocab.yaml')
-    assert os.path.exists(f'data/{lang}_concat.txt')
-    
+
+def build_vocab():
+    assert os.path.exists(f'configs/vocab.yaml')
     with open('configs/vocab.yaml', 'r') as f:
         vocab_dict = yaml.load(f, Loader=yaml.FullLoader)
 
-    opt = f"--input=data/{lang}_concat.txt\
-            --model_prefix=data/{lang}_tokenizer\
-            --vocab_size={vocab_dict['vocab_size']}\
-            --character_coverage={vocab_dict['coverage']}\
-            --model_type={vocab_dict['type']}\
-            --unk_id={vocab_dict['unk_id']} --unk_piece={vocab_dict['unk_piece']}\
-            --pad_id={vocab_dict['pad_id']} --pad_piece={vocab_dict['pad_piece']}\
-            --bos_id={vocab_dict['bos_id']} --bos_piece={vocab_dict['bos_piece']}\
-            --eos_id={vocab_dict['eos_id']} --eos_piece={vocab_dict['eos_piece']}"
+    for file in ["src", 'trg']:        
+        assert os.path.exists(f'data/{file}.txt')
+        opt = f"--input=data/{file}.txt\
+                --model_prefix=data/{file}_tokenizer\
+                --vocab_size={vocab_dict['vocab_size']}\
+                --character_coverage={vocab_dict['coverage']}\
+                --model_type={vocab_dict['type']}\
+                --unk_id={vocab_dict['unk_id']} --unk_piece={vocab_dict['unk_piece']}\
+                --pad_id={vocab_dict['pad_id']} --pad_piece={vocab_dict['pad_piece']}\
+                --bos_id={vocab_dict['bos_id']} --bos_piece={vocab_dict['bos_piece']}\
+                --eos_id={vocab_dict['eos_id']} --eos_piece={vocab_dict['eos_piece']}"
 
-    spm.SentencePieceTrainer.Train(opt)
-    os.remove(f'data/{lang}_concat.txt')
+        spm.SentencePieceTrainer.Train(opt)
+        os.remove(f'data/{file}.txt')
 
 
-def tokenize_data(data, src_tokenizer, trg_tokenizer):
+
+def tokenize_datasets(train, valid, test, src_tokenizer, trg_tokenizer):
     tokenized_data = []
 
-    for elem in data:
-        temp_dict = dict()
-
-        temp_dict['src_seq'] = elem['src']
-        temp_dict['trg_seq'] = elem['trg']
+    for split in (train, valid, test):
+        split_tokenized = []
         
-        temp_dict['src_ids'] = src_tokenizer.EncodeAsIds(elem['src'])
-        temp_dict['trg_ids'] = trg_tokenizer.EncodeAsIds(elem['trg'])
+        for elem in split:
+            temp_dict = dict()
+            
+            temp_dict['src'] = src_tokenizer.EncodeAsIds(elem['src'])
+            temp_dict['trg'] = trg_tokenizer.EncodeAsIds(elem['trg'])
+            
+            split_tokenized.append(temp_dict)
         
-        tokenized_data.append(temp_dict)
-        
+        tokenized_data.append(split_tokenized)
+    
     return tokenized_data
 
 
-def load_tokenizer(lang):
-    tokenizer = spm.SentencePieceProcessor()
-    tokenizer.load(f'data/{lang}_tokenizer.model')
-    tokenizer.SetEncodeExtraOptions('bos:eos')    
-    return tokenizer
+
+def load_tokenizers():
+    tokenizers = []
+    for side in ['src', 'trg']:
+        tokenizer = spm.SentencePieceProcessor()
+        tokenizer.load(f'data/{side}_tokenizer.model')
+        tokenizer.SetEncodeExtraOptions('bos:eos')    
+        tokenizers.append(tokenizer)
+    return tokenizers
 
 
 
 
-def download_data():
-    return
-
-
-def process_data():
-
-
-def main():
-    return
+def save_datasets(train, valid, test):
+    data_dict = {k:v for k, v in zip(['train', 'valid', 'test'], [train, valid, test])}
+    for key, val in data_dict.items():
+        with open(f'data/{key}.json', 'w') as f:
+            data = json.dump(val, f)
 
 
 
+def filter_dataset(data, min_len=10, max_len=300):
+    filtered = []
+    for elem in data:
+        temp_dict = dict()
+        src_len, trg_len = len(elem['en']), len(elem['de'])
+        max_condition = (src_len <= max_len) & (trg_len <= max_len)
+        min_condition = (src_len >= min_len) & (trg_len >= min_len)
+
+        if max_condition & min_condition:
+            temp_dict['src'] = elem['en']
+            temp_dict['trg'] = elem['de']
+            filtered.append(temp_dict)
+
+    return filtered
 
 
+
+def main(args):
+    #Download datasets
+    train = load_dataset('wmt14', 'de-en', split='train')['translation']
+    valid = load_dataset('wmt14', 'de-en', split='validation')['translation']
+    test = load_dataset('wmt14', 'de-en', split='test')['translation']
+
+    #create concat
+    concat_data(train, valid, test)
+    build_vocab()
+    src_tokenizer, trg_tokenizer = load_tokenizers()
+
+    train = filter_dataset(train)
+    valid = filter_dataset(valid)
+    test = filter_dataset(test)
+    
+    if args.sort:
+        train = sorted(train, key=lambda x: len(x['src']))
+        valid = sorted(valid, key=lambda x: len(x['src']))
+        test = sorted(test, key=lambda x: len(x['src']))
+
+    if args.downsize:
+        train = train[::10]
+    
+    train, valid, test = tokenize_datasets(train, valid, test, src_tokenizer, trg_tokenizer)
+    save_datasets(train, valid, test)
 
 
 
 if __name__ == '__main__':
-    for split in ['train', 'valid', 'test']:
-        text2json(split)
-    create_concats()
-    build_vocab('en')
-    build_vocab('de')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-sort', default=True, required=False)
+    parser.add_argument('-downsize', default=True, required=False)
+    args = parser.parse_args()
+    assert args.sort in [True, False]
+    assert args.downsize in [True, False]
 
-    src_tokenizer = load_tokenizer('en')
-    trg_tokenizer = load_tokenizer('de')
-
-    train_data = read_json('train')
-    valid_data = read_json('valid')
-    test_data = read_json('test')
-
-    train_data = tokenize_data(train_data, src_tokenizer, trg_tokenizer)
-    valid_data = tokenize_data(valid_data, src_tokenizer, trg_tokenizer)
-    test_data = tokenize_data(test_data, src_tokenizer, trg_tokenizer)
-
-    save_json('train', train_data)
-    save_json('valid', valid_data)
-    save_json('test', test_data)
+    main(args)
+    assert os.path.exists(f'data/train.json')
+    assert os.path.exists(f'data/valid.json')
+    assert os.path.exists(f'data/test.json')
