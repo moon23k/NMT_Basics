@@ -118,7 +118,9 @@ def main(args):
         test = sorted(test, key=lambda x: len(x['src']))
 
     if args.downsize:
-        train = train[::10]
+        train = train[::100]
+        valid = valid[::2]
+        test = test[::2]
     
     train, valid, test = tokenize_datasets(train, valid, test, src_tokenizer, trg_tokenizer)
     save_datasets(train, valid, test)
