@@ -87,17 +87,17 @@ git clone https://github.com/moon23k/NMT_Basic
 
 <br>
 
-**Download and Process Dataset by the code below**
+**Download and Process Dataset via setup.py**
 ```
 cd NMT_Basic
-bash prepare_data.sh
+bash setup.py -downsize [True, False] -sort [True, False]
 ```
 
 <br>
 
 **Train models with "train.py" file (scheduler is optional)**
 ```
-python3 train.py -model ['seq2seq', 'attention', 'transformer'] -scheduler ['constant', 'noam', 'cosine_annealing_warm', 'exponential', 'step']
+python3 train.py -model ['seq2seq', 'attention', 'transformer'] -scheduler ['constant', 'exponential', 'step', 'cosine_annealing_warm']
 ```
 
 <br>
@@ -120,15 +120,24 @@ python3 inference.py -model ['seq2seq', 'attention', 'transformer']
 
 ## Results
 
+> **Training Results**
+
 <center>
   <img src="https://user-images.githubusercontent.com/71929682/189513608-2e6949e8-9718-4b15-b02d-12d8c71d3a61.png" width="90%" height="70%">
-
-</br>
 
 | | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `Seq2Seq` &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp; `Attention` &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp; `Transformer` &nbsp;&nbsp; |
 | :---: | :---: | :---: | :---: |
 | &nbsp; **`Average Training time per Epoch`** &nbsp; | 2min 59sec | 8min 10sec | 44sec|
 </center>
+
+</br>
+
+> **Test Results**
+
+</br>
+</br>
+
+> **Inference Results**
 
 <br>
 
@@ -136,6 +145,6 @@ python3 inference.py -model ['seq2seq', 'attention', 'transformer']
 <br>
 
 ## References
-* Sequence to Sequence Learning with Neural Networks
-* Neural Machine Translation by Jointly Learning to Align and Translate
-* Attention is all you need
+* [Sequence to Sequence Learning with Neural Networks](https://arxiv.org/abs/1409.3215)
+* [Neural Machine Translation by Jointly Learning to Align and Translate](https://arxiv.org/abs/1409.0473)
+* [Attention is all you need](https://arxiv.org/abs/1706.03762)
