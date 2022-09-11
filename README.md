@@ -6,7 +6,7 @@ For a fairer comparision, some modifications are applied and as a result, some p
 <br>
 
 ### Table of Contents
-> **[Model desc](#model-desc)** &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **[Configs](#configs)** &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **[How to Use](#how-to-use)** &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **[Results](#results)** &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **[References](#references)**
+> &nbsp; **[Model desc](#model-desc)** &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **[Configs](#configurations)** &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **[How to Use](#how-to-use)** &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **[Results](#results)** &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **[References](#references)**
 </br>
 
 
@@ -121,7 +121,13 @@ python3 inference.py -model ['seq2seq', 'attention', 'transformer']
 ## Results
 
 <center>
-  <img src="https://user-images.githubusercontent.com/71929682/188311738-ec98d7c4-f10c-4b5d-aa8a-c538c58d974b.png" width="90%" height="70%">
+  <img src="https://user-images.githubusercontent.com/71929682/189513608-2e6949e8-9718-4b15-b02d-12d8c71d3a61.png" width="90%" height="70%">
+
+</br>
+
+| | &nbsp;&nbsp;&nbsp; `Seq2Seq` &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp; `Attention` &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp; `Transformer` &nbsp;&nbsp;&nbsp; |
+| :---: | :---: | :---: | :---: |
+| `Average Training time per Epoch` | 2min 59sec | 8min 10sec | 44sec|
 </center>
 
 <br>
