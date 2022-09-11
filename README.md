@@ -125,9 +125,9 @@ python3 inference.py -model ['seq2seq', 'attention', 'transformer']
 
 </br>
 
-| | &nbsp;&nbsp;&nbsp; `Seq2Seq` &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp; `Attention` &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp; `Transformer` &nbsp;&nbsp;&nbsp; |
+| | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `Seq2Seq` &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp; `Attention` &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp; `Transformer` &nbsp;&nbsp; |
 | :---: | :---: | :---: | :---: |
-| `Average Training time per Epoch` | 2min 59sec | 8min 10sec | 44sec|
+| &nbsp; **`Average Training time per Epoch`** &nbsp; | 2min 59sec | 8min 10sec | 44sec|
 </center>
 
 <br>
