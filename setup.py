@@ -1,4 +1,4 @@
-import os, json, yaml, argparse
+import os, json, yaml
 import sentencepiece as spm
 from datasets import load_dataset
 
@@ -76,7 +76,7 @@ def save_datasets(train, valid, test):
     data_dict = {k:v for k, v in zip(['train', 'valid', 'test'], [train, valid, test])}
     for key, val in data_dict.items():
         with open(f'data/{key}.json', 'w') as f:
-            data = json.dump(val, f)
+            json.dump(val, f)
 
 
 
@@ -97,30 +97,30 @@ def filter_dataset(data, min_len=10, max_len=300):
 
 
 
-def main(args):
+def main(downsize=True, sort=True):
     #Download datasets
     train = load_dataset('wmt14', 'de-en', split='train')['translation']
     valid = load_dataset('wmt14', 'de-en', split='validation')['translation']
     test = load_dataset('wmt14', 'de-en', split='test')['translation']
 
-    #create concat
-    concat_data(train, valid, test)
-    build_vocab()
-    src_tokenizer, trg_tokenizer = load_tokenizers()
-
     train = filter_dataset(train)
     valid = filter_dataset(valid)
     test = filter_dataset(test)
-    
-    if args.sort:
+
+    if downsize:
+        train = train[::100]
+        valid = valid[::2]
+        test = test[::2]
+
+    if sort:
         train = sorted(train, key=lambda x: len(x['src']))
         valid = sorted(valid, key=lambda x: len(x['src']))
         test = sorted(test, key=lambda x: len(x['src']))
 
-    if args.downsize:
-        train = train[::100]
-        valid = valid[::2]
-        test = test[::2]
+    #create concat
+    concat_data(train, valid, test)
+    build_vocab()
+    src_tokenizer, trg_tokenizer = load_tokenizers()
     
     train, valid, test = tokenize_datasets(train, valid, test, src_tokenizer, trg_tokenizer)
     save_datasets(train, valid, test)
@@ -128,14 +128,7 @@ def main(args):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-sort', default=True, required=False)
-    parser.add_argument('-downsize', default=True, required=False)
-    args = parser.parse_args()
-    assert args.sort in [True, False]
-    assert args.downsize in [True, False]
-
-    main(args)
+    main()
     assert os.path.exists(f'data/train.json')
     assert os.path.exists(f'data/valid.json')
     assert os.path.exists(f'data/test.json')
