@@ -59,15 +59,15 @@ But the Transformer solved these problems only with Attentions. As a result, the
 
 > **Training Configs**
 
-* **Batch Size:** 128 </br>
-* **Num of Epochs:** 10 </br>
-* **Learning Rate:** 1e-4 </br>
-* **Label Smoothing:** 0.1 </br>
-* **Optimizer:** Adam Optimizer </br>
-* **Tokenization:** BPE Tokenziation </br>
-* **Loss Function:** Cross Entropy Loss </br>
-* **Data:** downsized WMT14 EN-DE dataset (4.5M -> 450K) </br>
-* Applied Different Initialization for Each Models
+* **Num of Epochs:** &nbsp; **`10`** </br>
+* **Label Smoothing:** &nbsp; **`0.1`** </br>
+* **Optimizer:** &nbsp; **`Adam Optimizer`** </br>
+* **Tokenization:** &nbsp; **`BPE Tokenziation`** </br>
+* **Loss Function:** &nbsp; **`Cross Entropy Loss`** </br>
+* **Data:** &nbsp; **`downsized WMT14 EN-DE dataset (4.5M -> 450K)`** </br>
+* **Batch Size:** &nbsp; **`16 on Attention, 128 on Seq2Seq and Transformer`** </br>
+* **Learning Rate:** &nbsp; **`1e-4 on Transformer, 1e-3 on Seq2Seq and Attention`** </br>
+* **`Applied Different Initialization for Each Models`**
 
 <br>
 
