@@ -1,7 +1,7 @@
 import time, math, json, torch
 import torch.nn as nn
 import torch.optim as optim
-from collections import namedtuple, defaultdict
+
 
 
 class Trainer:

@@ -8,8 +8,8 @@ def concat_data(train, valid, test):
     src, trg = [], []
     for split in (train, valid, test):
         for elem in split:
-            src.append(elem['en'])
-            trg.append(elem['de'])
+            src.append(elem['src'])
+            trg.append(elem['trg'])
 
     with open('data/src.txt', 'w') as f:
         f.write('\n'.join(src))
@@ -108,9 +108,7 @@ def main(downsize=True, sort=True):
     test = filter_dataset(test)
 
     if downsize:
-        train = train[::100]
-        valid = valid[::2]
-        test = test[::2]
+        train = train[::50]
 
     if sort:
         train = sorted(train, key=lambda x: len(x['src']))

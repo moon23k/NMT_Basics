@@ -29,6 +29,7 @@ class Config(object):
 
         self.task = args.task
         self.model_name = args.model
+        self.scheduler = args.scheduler
         
         self.unk_idx = 0
         self.pad_idx = 1
@@ -117,7 +118,7 @@ def main(config):
     if config.task == 'train':
         train_dataloader = load_dataloader(config, 'train')
         valid_dataloader = load_dataloader(config, 'valid')        
-        trainer = Trainer(model, config, train_dataloader, valid_dataloader)
+        trainer = Trainer(config, model, train_dataloader, valid_dataloader)
         trainer.train()
     
     elif config.task == 'test':
@@ -138,7 +139,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-task', required=True)
     parser.add_argument('-model', required=True)
-    parser.add_argument('-scheduler', required=False)
+    parser.add_argument('-scheduler', default='constant', required=False)
     
     args = parser.parse_args()
     assert args.task in ['train', 'test', 'inference']
