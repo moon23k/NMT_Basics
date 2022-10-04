@@ -6,7 +6,7 @@ For a fairer comparision, some modifications are applied and as a result, some p
 <br>
 
 ### Table of Contents
-> &nbsp; **[Model desc](#model-desc)** &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **[Configs](#configurations)** &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **[How to Use](#how-to-use)** &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **[Results](#results)** &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **[References](#references)**
+> &nbsp; **[Model desc](#model-desc)** &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **[Configs](#configurations)** &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **[Results](#results)** &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **[How to Use](#how-to-use)** &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **[References](#references)**
 </br>
 
 
@@ -69,12 +69,35 @@ But the Transformer solved these problems only with Attentions. As a result, the
 * **Learning Rate:** &nbsp; **`1e-4 on Transformer, 1e-3 on Seq2Seq and Attention`** </br>
 * **`Applied Different Initialization for Each Models`**
 
-<br>
-
 <center>
   <img src="https://user-images.githubusercontent.com/71929682/168110116-374d3ac9-48d6-41e3-a2ce-d216f2e76422.png" width="80%" height="60%">
 </center>
 
+
+<br>
+<br>
+
+## Results
+
+> **Training Results**
+
+<center>
+  <img src="https://user-images.githubusercontent.com/71929682/189513608-2e6949e8-9718-4b15-b02d-12d8c71d3a61.png" width="90%" height="70%">
+</center>
+
+| | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `Seq2Seq` &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp; `Attention` &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp; `Transformer` &nbsp;&nbsp; |
+| :---: | :---: | :---: | :---: |
+| &nbsp; **`Average Training time per Epoch`** &nbsp; | 2min 59sec | 8min 10sec | 44sec|
+
+
+</br>
+
+> **Test Results**
+
+</br>
+</br>
+
+> **Inference Results**
 
 <br>
 <br>
@@ -113,33 +136,6 @@ python3 test.py -model ['seq2seq', 'attention', 'transformer']
 ```
 python3 inference.py -model ['seq2seq', 'attention', 'transformer']
 ```
-
-<br>
-<br>
-
-
-## Results
-
-> **Training Results**
-
-<center>
-  <img src="https://user-images.githubusercontent.com/71929682/189513608-2e6949e8-9718-4b15-b02d-12d8c71d3a61.png" width="90%" height="70%">
-
-| | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `Seq2Seq` &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp; `Attention` &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp; `Transformer` &nbsp;&nbsp; |
-| :---: | :---: | :---: | :---: |
-| &nbsp; **`Average Training time per Epoch`** &nbsp; | 2min 59sec | 8min 10sec | 44sec|
-</center>
-
-</br>
-
-> **Test Results**
-
-</br>
-</br>
-
-> **Inference Results**
-
-<br>
 
 <br>
 <br>
