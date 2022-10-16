@@ -37,18 +37,17 @@ class Config(object):
         self.eos_idx = 3
 
         self.clip = 1
-        self.n_epochs = 1
-        self.batch_size = 128
-        
-        if self.model_name == 'transformer':
-            self.learning_rate = 1e-3
-        else:
-            self.learning_rate = 1e-4
+        self.n_epochs = 10
+        self.batch_size = 32
+        self.learning_rate = 1e-3
+        self.learning_rate = 5e-4
 
         if self.task == 'inference':
             self.device = torch.device('cpu')
         else:
             self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+        self.ckpt_path = f"ckpt/{self.model_name}.pt"
 
     def print_attr(self):
         for attribute, value in self.__dict__.items():
@@ -105,6 +104,7 @@ def load_model(config):
         model.apply(init_xavier)
         
     if config.task != 'train':
+        assert os.path.exists(config.ckpt_path)
         model_state = torch.load(config.ckpt_path, map_location=config.device)['model_state_dict']
         model.load_state_dict(model_state)
 

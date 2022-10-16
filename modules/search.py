@@ -24,17 +24,17 @@ class Search:
             self.Node = namedtuple('Node', ['prev_node', 'pred', 'pred_mask', 'log_prob', 'length'])
 
 
-    def beam_score(self, node, no_repeat_ngram_size, min_length=5, alpha=1.2):
-        overlap = max([node.pred.tolist().count(token) for token in node.pred.tolist() if token != self.pad_idx])
+    def beam_score(self, node, max_repeat, min_length=5, alpha=1.2):
+        repetition = max([node.pred.tolist().count(token) for token in node.pred.tolist() if token != self.pad_idx])
 
-        if overlap > no_repeat_ngram_size:
-            overlap_penalty = -1
+        if repetition > max_repeat:
+            repeat_penalty = -1
         else:
-            overlap_penalty = 1
+            repeat_penalty = 1
         
         length_penalty = ((node.length + min_length) / (1 + min_length)) ** alpha
         score = node.log_prob / length_penalty
-        score = score * overlap_penalty
+        score = score * repeat_penalty
         return score
 
 

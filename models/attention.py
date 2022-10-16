@@ -112,3 +112,4 @@ class Seq2SeqAttn(nn.Module):
         
         outputs = outputs.permute(1, 0, 2)
         return outputs[:, 1:].contiguous()
+

@@ -108,7 +108,7 @@ def main(downsize=True, sort=True):
     test = filter_dataset(test)
 
     if downsize:
-        train = train[::50]
+        train = train[::70]
 
     if sort:
         train = sorted(train, key=lambda x: len(x['src']))

@@ -17,7 +17,8 @@ class Trainer:
         self.train_dataloader = train_dataloader
         self.valid_dataloader = valid_dataloader
 
-        self.criterion = nn.CrossEntropyLoss(ignore_index=config.pad_idx, label_smoothing=0.1).to(self.device)
+        self.criterion = nn.CrossEntropyLoss(ignore_index=config.pad_idx, 
+                                             label_smoothing=0.1).to(self.device)
         self.optimizer = optim.Adam(self.model.parameters(), 
                                     lr=config.learning_rate, 
                                     betas=(0.9, 0.98), 
@@ -37,7 +38,7 @@ class Trainer:
                                                          gamma=0.97,
                                                          cycle_momentum=False)
         
-        self.ckpt_path = f'ckpt/{self.model_name}.pt'
+        self.ckpt_path = config.ckpt_path
         self.record_path = f"ckpt/{self.model_name}.json"
         self.record_keys = ['epoch', 'train_loss', 'train_ppl',
                             'valid_loss', 'valid_ppl', 
@@ -115,8 +116,9 @@ class Trainer:
 
             epoch_loss += loss.item()
         
-        epoch_loss = epoch_loss / tot_len
-        return epoch_loss, math.exp(epoch_loss)
+        epoch_loss = round(epoch_loss / tot_len, 3)
+        epoch_ppl = round(math.exp(epoch_loss), 3)    
+        return epoch_loss, epoch_ppl
     
 
     def valid_epoch(self):
@@ -137,5 +139,6 @@ class Trainer:
                                       trg[:, 1:].contiguous().view(-1))
                 epoch_loss += loss.item()
         
-        epoch_loss = epoch_loss / tot_len
-        return epoch_loss, math.exp(epoch_loss)
+        epoch_loss = round(epoch_loss / tot_len, 3)
+        epoch_ppl = round(math.exp(epoch_loss), 3)        
+        return epoch_loss, epoch_ppl

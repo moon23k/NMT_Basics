@@ -32,9 +32,7 @@ class Decoder(nn.Module):
         self.dropout = nn.Dropout(config.dropout_ratio)
     
     def forward(self, x, hiddens):
-        x = x.unsqueeze(1)
         x = self.dropout(self.embedding(x))
-
         out, hiddens = self.rnn(x, hiddens)
         out = self.fc_out(out.squeeze(1))
         return out, hiddens
@@ -52,7 +50,7 @@ class Seq2Seq(nn.Module):
         batch_size, max_len = trg.shape
         outputs = torch.ones(max_len, batch_size, self.output_dim).to(self.device)
 
-        dec_input = trg[:, 0]
+        dec_input = trg[:, 0].unsqueeze(1)
         hiddens = self.encoder(src)
 
         for idx in range(1, max_len):

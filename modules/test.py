@@ -51,7 +51,7 @@ class Tester(Search):
                 if self.model_name== 'transformer':
                     logit = self.model(src, trg[:, :-1])
                 else:
-                    logit = self.model(src, trg)
+                    logit = self.model(src, trg, teacher_forcing_ratio=0.0)
                 
                 loss = self.criterion(logit.contiguous().view(-1, self.output_dim), 
                                       trg[:, 1:].contiguous().view(-1)).item()
