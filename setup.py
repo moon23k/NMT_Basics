@@ -26,7 +26,7 @@ def build_vocab():
     for file in ["src", 'trg']:        
         assert os.path.exists(f'data/{file}.txt')
         opt = f"--input=data/{file}.txt\
-                --model_prefix=data/{file}_tokenizer\
+                --model_prefix=data/{file}_spm\
                 --vocab_size={vocab_dict['vocab_size']}\
                 --character_coverage={vocab_dict['coverage']}\
                 --model_type={vocab_dict['type']}\

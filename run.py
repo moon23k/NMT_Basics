@@ -1,6 +1,6 @@
 import numpy as np
 import sentencepiece as spm
-import yaml, random, argparse
+import os, yaml, random, argparse
 
 import torch
 import torch.nn as nn
@@ -68,7 +68,7 @@ def set_seed(SEED=42):
 
 def load_tokenizer(lang):
     tokenizer = spm.SentencePieceProcessor()
-    tokenizer.load(f'data/{lang}_tokenizer.model')
+    tokenizer.load(f'data/{lang}_spm.model')
     tokenizer.SetEncodeExtraOptions('bos:eos')
     return tokenizer
 
@@ -92,6 +92,26 @@ def init_xavier(model):
         nn.init.xavier_uniform_(model.weight.data)
 
 
+
+def count_params(model):
+    params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    return params
+    
+
+def check_size(model):
+    param_size, buffer_size = 0, 0
+
+    for param in model.parameters():
+        param_size += param.nelement() * param.element_size()
+    
+    for buffer in model.buffers():
+        buffer_size += buffer.nelement() * buffer.element_size()
+
+    size_all_mb = (param_size + buffer_size) / 1024**2
+    return size_all_mb
+
+
+
 def load_model(config):
     if config.model_name == 'seq2seq':
         model = Seq2Seq(config)
@@ -108,6 +128,9 @@ def load_model(config):
         model_state = torch.load(config.ckpt_path, map_location=config.device)['model_state_dict']
         model.load_state_dict(model_state)
 
+    print(f"The {config.model_name} model has loaded")
+    print(f"--- Model Params: {count_params(model):,}")
+    print(f"--- Model  Size : {check_size(model):.3f} MB")
     return model.to(config.device)
 
 
@@ -123,13 +146,13 @@ def main(config):
     
     elif config.task == 'test':
         test_dataloader = load_dataloader(config, 'test')
-        trg_tokenizer = load_tokenizer('de')
+        trg_tokenizer = load_tokenizer('src')
         tester = Tester(config, model, test_dataloader, trg_tokenizer)
         tester.test()
     
     elif config.task == 'inference':
-        src_tokenizer = load_tokenizer('en')
-        trg_tokenizer = load_tokenizer('de')
+        src_tokenizer = load_tokenizer('src')
+        trg_tokenizer = load_tokenizer('trg')
         translator = Translator(model, config, src_tokenizer, trg_tokenizer)
         translator.translate()
     

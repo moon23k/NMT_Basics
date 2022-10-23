@@ -9,7 +9,7 @@ class Encoder(nn.Module):
         self.rnn = nn.LSTM(config.emb_dim, 
                            config.hidden_dim, 
                            config.n_layers, 
-                           batch_first=True, 
+                           batch_first=False, 
                            dropout=config.dropout_ratio)
         self.dropout = nn.Dropout(config.dropout_ratio)
     
@@ -26,15 +26,15 @@ class Decoder(nn.Module):
         self.rnn = nn.LSTM(config.emb_dim,
                            config.hidden_dim, 
                            config.n_layers,
-                           batch_first=True,
+                           batch_first=False,
                            dropout=config.dropout_ratio)
         self.fc_out = nn.Linear(config.hidden_dim, config.output_dim)
         self.dropout = nn.Dropout(config.dropout_ratio)
     
     def forward(self, x, hiddens):
-        x = self.dropout(self.embedding(x))
+        x = self.dropout(self.embedding(x.unsqueeze(0)))
         out, hiddens = self.rnn(x, hiddens)
-        out = self.fc_out(out.squeeze(1))
+        out = self.fc_out(out.squeeze(0))
         return out, hiddens
 
 
@@ -47,18 +47,17 @@ class Seq2Seq(nn.Module):
         self.decoder = Decoder(config)
     
     def forward(self, src, trg, teacher_forcing_ratio=0.5):
-        batch_size, max_len = trg.shape
+        max_len, batch_size = trg.shape
         outputs = torch.ones(max_len, batch_size, self.output_dim).to(self.device)
 
-        dec_input = trg[:, 0].unsqueeze(1)
+        dec_input = trg[0, :]
         hiddens = self.encoder(src)
 
-        for idx in range(1, max_len):
+        for t in range(1, max_len):
             out, hiddens = self.decoder(dec_input, hiddens)
-            outputs[idx] = out
-            pred = out.argmax(-1)
+            outputs[t] = out
+            pred = out.argmax(1)
             teacher_force = random.random() < teacher_forcing_ratio
-            dec_input = trg[:, idx] if teacher_force else pred
+            dec_input = trg[t] if teacher_force else pred
 
-        outputs = outputs.permute(1, 0, 2)
-        return outputs[:, 1:].contiguous()
+        return outputs[1:, :].contiguous()
