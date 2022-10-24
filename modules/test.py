@@ -1,11 +1,11 @@
 import torch.nn as nn
 import math, time, torch
-from modules.search import Search
+from modules.search import SeqBeam, AttnBeam, TransBeam
 from torchtext.data.metrics import bleu_score
 
 
 
-class Tester(Search):
+class Tester:
     def __init__(self, config, model, dataloader, tokenizer):
         super(Tester, self).__init__(config, model)
         self.model = model
@@ -19,6 +19,13 @@ class Tester(Search):
         self.model_name = config.model_name
         self.output_dim = config.output_dim
         self.criterion = nn.CrossEntropyLoss(ignore_index=config.pad_idx, label_smoothing=0.1).to(config.device)
+        
+        if self.model_name == 'seq2seq':
+            self.beam = SeqBeam(config, self.model)
+        elif self.model_name == 'attention':
+            self.beam = AttnBeam(config, self.model)
+        if self.model_name == 'transformer':
+            self.beam = TransBeam(config, self.model)            
 
 
     def get_bleu_score(self, pred, trg):
@@ -50,16 +57,17 @@ class Tester(Search):
 
                 if self.model_name== 'transformer':
                     logit = self.model(src, trg[:, :-1])
+                    #greedy_pred =
+                    beam_pred = self.beam.search(src)
+
                 else:
                     logit = self.model(src, trg, teacher_forcing_ratio=0.0)
-                
+                    greedy_pred = logit.argmax(-1).tolist()
+                    beam_pred = self.beam.search(src)
+
                 loss = self.criterion(logit.contiguous().view(-1, self.output_dim), 
                                       trg[:, 1:].contiguous().view(-1)).item()
 
-                greedy_pred = logit.argmax(-1).tolist()
-                beam_pred = self.beam_search(src, trg)
-                
-                return loss, greedy_pred, beam_pred
 
                 beam_bleu = self.get_bleu_score(beam_pred, trg)    
                 greedy_bleu = self.get_bleu_score(greedy_pred, trg)

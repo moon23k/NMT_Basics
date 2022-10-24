@@ -103,11 +103,11 @@ class Trainer:
             
             if self.model_name != 'transformer':
                 logit = self.model(src, trg, teacher_forcing_ratio=0.5)
-            elif self.model_name == 'transformer':
+            else:
                 logit = self.model(src, trg[:, :-1])
 
             loss = self.criterion(logit.contiguous().view(-1, self.output_dim),
-                                  trg[:, 1:].contiguous().view(-1))
+                                    trg[:, 1:].contiguous().view(-1))
             loss.backward()
             nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=self.clip)
             
@@ -132,11 +132,11 @@ class Trainer:
                 
                 if self.model_name != 'transformer':
                     logit = self.model(src, trg, teacher_forcing_ratio=0.0)
-                elif self.model_name == 'transformer':
+                else:
                     logit = self.model(src, trg[:, :-1])
 
                 loss = self.criterion(logit.contiguous().view(-1, self.output_dim),
-                                      trg[:, 1:].contiguous().view(-1))
+                                        trg[:, 1:].contiguous().view(-1))
                 epoch_loss += loss.item()
         
         epoch_loss = round(epoch_loss / tot_len, 3)

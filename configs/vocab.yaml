@@ -1,4 +1,4 @@
-vocab_size: 15000
+vocab_size: 10000
 coverage: 1
 type: bpe
 

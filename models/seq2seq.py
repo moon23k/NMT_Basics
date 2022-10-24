@@ -1,4 +1,4 @@
-import random, torch
+import torch, random
 import torch.nn as nn
 
 
@@ -9,7 +9,7 @@ class Encoder(nn.Module):
         self.rnn = nn.LSTM(config.emb_dim, 
                            config.hidden_dim, 
                            config.n_layers, 
-                           batch_first=False, 
+                           batch_first=True, 
                            dropout=config.dropout_ratio)
         self.dropout = nn.Dropout(config.dropout_ratio)
     
@@ -26,15 +26,15 @@ class Decoder(nn.Module):
         self.rnn = nn.LSTM(config.emb_dim,
                            config.hidden_dim, 
                            config.n_layers,
-                           batch_first=False,
+                           batch_first=True,
                            dropout=config.dropout_ratio)
         self.fc_out = nn.Linear(config.hidden_dim, config.output_dim)
         self.dropout = nn.Dropout(config.dropout_ratio)
     
     def forward(self, x, hiddens):
-        x = self.dropout(self.embedding(x.unsqueeze(0)))
+        x = self.dropout(self.embedding(x.unsqueeze(1)))
         out, hiddens = self.rnn(x, hiddens)
-        out = self.fc_out(out.squeeze(0))
+        out = self.fc_out(out.squeeze(1))
         return out, hiddens
 
 
@@ -47,17 +47,17 @@ class Seq2Seq(nn.Module):
         self.decoder = Decoder(config)
     
     def forward(self, src, trg, teacher_forcing_ratio=0.5):
-        max_len, batch_size = trg.shape
+        batch_size, max_len = trg.shape
         outputs = torch.ones(max_len, batch_size, self.output_dim).to(self.device)
 
-        dec_input = trg[0, :]
+        dec_input = trg[:, 0]
         hiddens = self.encoder(src)
 
         for t in range(1, max_len):
             out, hiddens = self.decoder(dec_input, hiddens)
             outputs[t] = out
-            pred = out.argmax(1)
+            pred = out.argmax(-1)
             teacher_force = random.random() < teacher_forcing_ratio
-            dec_input = trg[t] if teacher_force else pred
+            dec_input = trg[:, t] if teacher_force else pred
 
-        return outputs[1:, :].contiguous()
+        return outputs.contiguous().permute(1, 0, 2)[:, 1:]
