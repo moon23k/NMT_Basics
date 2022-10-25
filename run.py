@@ -19,6 +19,17 @@ from modules.data import load_dataloader
 
 
 
+def set_seed(SEED=42):
+    random.seed(SEED)
+    np.random.seed(SEED)
+    torch.manual_seed(SEED)
+    torch.cuda.manual_seed(SEED)
+    torch.cuda.manual_seed_all(SEED)
+    cudnn.benchmark = False
+    cudnn.deterministic = True
+
+
+
 class Config(object):
     def __init__(self, args):    
         with open('configs/model.yaml', 'r') as f:
@@ -39,15 +50,16 @@ class Config(object):
         self.clip = 1
         self.n_epochs = 10
         self.batch_size = 32
-        self.learning_rate = 1e-3
         self.learning_rate = 5e-4
+        self.ckpt_path = f"ckpt/{self.model_name}.pt"
 
         if self.task == 'inference':
+            self.search = args.search
             self.device = torch.device('cpu')
         else:
+            self.search = None
             self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-        self.ckpt_path = f"ckpt/{self.model_name}.pt"
+        
 
     def print_attr(self):
         for attribute, value in self.__dict__.items():
@@ -55,29 +67,9 @@ class Config(object):
 
 
 
-def set_seed(SEED=42):
-    random.seed(SEED)
-    np.random.seed(SEED)
-    torch.manual_seed(SEED)
-    torch.cuda.manual_seed(SEED)
-    torch.cuda.manual_seed_all(SEED)
-    cudnn.benchmark = False
-    cudnn.deterministic = True
-
-
-
-def load_tokenizer(lang):
-    tokenizer = spm.SentencePieceProcessor()
-    tokenizer.load(f'data/{lang}_spm.model')
-    tokenizer.SetEncodeExtraOptions('bos:eos')
-    return tokenizer
-
-
 def init_uniform(model):
     for name, param in model.named_parameters():
         nn.init.uniform_(param.data, -0.08, 0.08)
-
-
 
 def init_normal(model):
     for name, param in model.named_parameters():
@@ -85,7 +77,6 @@ def init_normal(model):
             nn.init.normal_(param.data, mean=0, std=0.01)
         else:
             nn.init.constant_(param.data, 0)
-
 
 def init_xavier(model):
     if hasattr(model, 'weight') and model.weight.dim() > 1:
@@ -110,6 +101,12 @@ def check_size(model):
     size_all_mb = (param_size + buffer_size) / 1024**2
     return size_all_mb
 
+
+def load_tokenizer(lang):
+    tokenizer = spm.SentencePieceProcessor()
+    tokenizer.load(f'data/{lang}_spm.model')
+    tokenizer.SetEncodeExtraOptions('bos:eos')
+    return tokenizer
 
 
 def load_model(config):
@@ -138,22 +135,16 @@ def load_model(config):
 def main(config):
     model = load_model(config)
 
-    if config.task == 'train':
-        train_dataloader = load_dataloader(config, 'train')
-        valid_dataloader = load_dataloader(config, 'valid')        
-        trainer = Trainer(config, model, train_dataloader, valid_dataloader)
+    if config.task == 'train': 
+        trainer = Trainer(config, model)
         trainer.train()
     
     elif config.task == 'test':
-        test_dataloader = load_dataloader(config, 'test')
-        trg_tokenizer = load_tokenizer('src')
-        tester = Tester(config, model, test_dataloader, trg_tokenizer)
+        tester = Tester(config, model)
         tester.test()
     
     elif config.task == 'inference':
-        src_tokenizer = load_tokenizer('src')
-        trg_tokenizer = load_tokenizer('trg')
-        translator = Translator(model, config, src_tokenizer, trg_tokenizer)
+        translator = Translator(model, config)
         translator.translate()
     
 
@@ -163,6 +154,7 @@ if __name__ == '__main__':
     parser.add_argument('-task', required=True)
     parser.add_argument('-model', required=True)
     parser.add_argument('-scheduler', default='constant', required=False)
+    parser.add_argument('-search', default='greedy', required=False)
     
     args = parser.parse_args()
     assert args.task in ['train', 'test', 'inference']

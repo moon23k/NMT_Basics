@@ -5,6 +5,7 @@ from collections import namedtuple
 
 
 
+
 def get_score(node, max_repeats, pad_idx, min_length=5, alpha=1.2):
     pred_repeats = max([node.pred.tolist().count(token) for token in node.pred.tolist() if token != pad_idx])
 
@@ -46,7 +47,9 @@ def get_nodes(start_node, beam_size):
     return nodes, [], []    
 
 
-class SeqBeam:
+
+
+class SeqSearch:
     def __init__(self, config, model):
         self.model = model
         self.beam_size = 4
@@ -119,8 +122,16 @@ class SeqBeam:
         return outputs    
 
 
+    def greedy_search(self, src):
+        outputs = []
+        src, batch_size, max_len, _ = src_params(src, self.pad_idx, self.bos_idx)
 
-class AttnBeam:
+        return outputs
+
+
+
+
+class AttnSearch:
     def __init__(self, config, model):
         self.model = model
         self.beam_size = 4
@@ -132,7 +143,7 @@ class AttnBeam:
         self.model_name = config.model_name
 
 
-    def search(self, src, topk=1):
+    def beam_search(self, src, topk=1):
         outputs = []
         Node = namedtuple('Node', ['prev_node', 'hidden', 'log_prob', 'pred', 'preds', 'length'])
         
@@ -193,8 +204,16 @@ class AttnBeam:
         return outputs        
 
 
+    def greedy_search(self, src):
+        outputs = []
+        src, batch_size, max_len, _ = src_params(src, self.pad_idx, self.bos_idx)
+        
+        return outputs
 
-class TransBeam:
+
+
+
+class TransSearch:
     def __init__(self, config, model):
         self.model = model
         self.beam_size = 4
@@ -206,7 +225,7 @@ class TransBeam:
         self.model_name = config.model_name
 
 
-    def search(self, src, topk=1):
+    def beam_search(self, src, topk=1):
         outputs = []
         Node = namedtuple('Node', ['prev_node', 'pred', 'pred_mask', 'log_prob', 'length'])
         
@@ -268,3 +287,18 @@ class TransBeam:
             outputs.append(output)
 
         return outputs        
+
+
+    def greedy_search(self, src):
+        outputs = []
+        src, batch_size, max_len, _ = src_params(src, self.pad_idx, self.bos_idx)
+
+        e_mask, d_mask = self.model.pad_mask(src), self.model.dec_mask(trg)
+        memory = self.model.encoder(src, e_mask)
+
+        for idx in range(batch_size):
+            for t in range(max_len):
+                if pred == self.eos_id:
+                    break
+
+        return outputs 

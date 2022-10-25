@@ -1,11 +1,12 @@
 import time, math, json, torch
 import torch.nn as nn
 import torch.optim as optim
+from modules.data import load_dataloader
 
 
 
 class Trainer:
-    def __init__(self, config, model, train_dataloader, valid_dataloader):
+    def __init__(self, config, model):
         super(Trainer, self).__init__()
         self.model = model
         self.clip = config.clip
@@ -14,8 +15,8 @@ class Trainer:
         self.output_dim = config.output_dim
         self.model_name = config.model_name
 
-        self.train_dataloader = train_dataloader
-        self.valid_dataloader = valid_dataloader
+        self.train_dataloader = load_dataloader(config, 'train')
+        self.valid_dataloader = load_dataloader(config, 'valid')
 
         self.criterion = nn.CrossEntropyLoss(ignore_index=config.pad_idx, 
                                              label_smoothing=0.1).to(self.device)
