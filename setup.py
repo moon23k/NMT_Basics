@@ -34,8 +34,8 @@ def build_vocab():
             --bos_id={vocab_dict['bos_id']} --bos_piece={vocab_dict['bos_piece']}\
             --eos_id={vocab_dict['eos_id']} --eos_piece={vocab_dict['eos_piece']}"
 
-        spm.SentencePieceTrainer.Train(opt)
-        os.remove('data/concat.txt')
+    spm.SentencePieceTrainer.Train(opt)
+    os.remove('data/concat.txt')
 
 
 

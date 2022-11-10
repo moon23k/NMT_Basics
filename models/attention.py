@@ -20,7 +20,7 @@ class Encoder(nn.Module):
         embedded = self.dropout(self.embedding(src))
         out, hidden = self.rnn(embedded)
         
-        hidden = torch.cat((hidden[-2, :, :], hidden[-1, :, :]), dim=1)
+        hidden = torch.cat((hidden[0], hidden[1]), dim=1)
         hidden = torch.tanh(self.fc(hidden))
 
         return out, hidden
