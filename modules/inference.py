@@ -6,14 +6,13 @@ from modules.search import SeqSearch, AttnSearch, TransSearch
 
 
 class Translator:
-	def __init__(self, config, model):
+	def __init__(self, config, model, tokenizer):
 		self.model = model
 		self.device = config.device
 		self.search = config.search
 		self.bos_idx = config.bos_idx
 		self.model_name == config.model_name
-        self.src_tokenizer = load_tokenizer('src')
-		self.trg_tokenizer = load_tokenizer('trg')
+		self.tokenizer = tokenizer
 
         if self.model.training:
             self.model.eval()

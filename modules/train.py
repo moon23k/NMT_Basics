@@ -1,12 +1,11 @@
 import time, math, json, torch
 import torch.nn as nn
 import torch.optim as optim
-from modules.data import load_dataloader
 
 
 
 class Trainer:
-    def __init__(self, config, model):
+    def __init__(self, config, model, train_dataloader, valid_dataloader):
         super(Trainer, self).__init__()
         self.model = model
         self.clip = config.clip
@@ -14,9 +13,9 @@ class Trainer:
         self.n_epochs = config.n_epochs
         self.output_dim = config.output_dim
         self.model_name = config.model_name
-
-        self.train_dataloader = load_dataloader(config, 'train')
-        self.valid_dataloader = load_dataloader(config, 'valid')
+        
+        self.train_dataloader = train_dataloader
+        self.valid_dataloader = valid_dataloader
 
         self.criterion = nn.CrossEntropyLoss(ignore_index=config.pad_idx, 
                                              label_smoothing=0.1).to(self.device)
@@ -100,15 +99,13 @@ class Trainer:
         tot_len = len(self.train_dataloader)
 
         for _, batch in enumerate(self.train_dataloader):
-            src, trg = batch['src'].to(self.device), batch['trg'].to(self.device)
+            src = batch['src'].to(self.device)
+            trg_input = batch['trg_input'].to(self.device)
+            trg_output = batch['trg_output'].to(self.device)
             
-            if self.model_name != 'transformer':
-                logit = self.model(src, trg, teacher_forcing_ratio=0.5)
-            else:
-                logit = self.model(src, trg[:, :-1])
-
+            logit = self.model(src, trg_input)
             loss = self.criterion(logit.contiguous().view(-1, self.output_dim),
-                                    trg[:, 1:].contiguous().view(-1))
+                                  trg_output.contiguous().view(-1))
             loss.backward()
             nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=self.clip)
             
@@ -129,15 +126,17 @@ class Trainer:
         
         with torch.no_grad():
             for _, batch in enumerate(self.valid_dataloader):
-                src, trg = batch['src'].to(self.device), batch['trg'].to(self.device)
+                src = batch['src'].to(self.device)
+                trg_input = batch['trg_input'].to(self.device)
+                trg_output = batch['trg_output'].to(self.device)
                 
                 if self.model_name != 'transformer':
-                    logit = self.model(src, trg, teacher_forcing_ratio=0.0)
+                    logit = self.model(src, trg_input, teacher_forcing_ratio=0.0)
                 else:
-                    logit = self.model(src, trg[:, :-1])
+                    logit = self.model(src, trg_input)
 
                 loss = self.criterion(logit.contiguous().view(-1, self.output_dim),
-                                        trg[:, 1:].contiguous().view(-1))
+                                      trg_output.contiguous().view(-1))
                 epoch_loss += loss.item()
         
         epoch_loss = round(epoch_loss / tot_len, 3)

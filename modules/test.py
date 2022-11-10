@@ -1,19 +1,16 @@
 import torch.nn as nn
 import math, time, torch
 from torchtext.data.metrics import bleu_score
-
-from run import load_tokenizer
-from modules.data import load_dataloader
 from modules.search import SeqSearch, AttnSearch, TransSearch
 
 
 
 class Tester:
-    def __init__(self, config, model):
-        super(Tester, self).__init__(config, model)
+    def __init__(self, config, model, test_dataloader, tokenizer):
+        super(Tester, self).__init__()
         self.model = model
-        self.tokenizer = load_tokenizer('trg')
-        self.dataloader = load_dataloader(config, 'test')
+        self.tokenizer = tokenizer
+        self.dataloader = test_dataloader
 
         self.device = config.device
         self.pad_idx = config.pad_idx
@@ -59,20 +56,22 @@ class Tester:
         
         with torch.no_grad():
             for idx, batch in enumerate(self.dataloader):
-                src, trg = batch['src'].to(self.device), batch['trg'].to(self.device)
+                src = batch['src'].to(self.device)
+                trg_input = batch['trg_input'].to(self.device)
+                trg_output = batch['trg_output'].to(self.device)
 
                 if self.model_name== 'transformer':
-                    logit = self.model(src, trg[:, :-1])
+                    logit = self.model(src, trg_input)
                     greedy_pred = self.Search.greedy_search(src)
                     beam_pred = self.Search.beam_search(src)
 
                 else:
-                    logit = self.model(src, trg, teacher_forcing_ratio=0.0)
+                    logit = self.model(src, trg_input, teacher_forcing_ratio=0.0)
                     greedy_pred = logit.argmax(-1).tolist()
-                    beam_pred = self.beam.search(src)
+                    beam_pred = self.Search.beam_search(src)
 
                 loss = self.criterion(logit.contiguous().view(-1, self.output_dim), 
-                                      trg[:, 1:].contiguous().view(-1)).item()
+                                      trg_output.contiguous().view(-1)).item()
 
 
                 beam_bleu = self.get_bleu_score(beam_pred, trg)    
