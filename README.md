@@ -1,5 +1,5 @@
 ## NMT_Basics
-This repo covers Basic Models for Neural Machine Translation Task.
+This repo deals with Three Basic Models for Neural Machine Translation Task.
 The main purpose is to check the developments while comparing each model.
 For a fairer comparision, some modifications are applied and as a result, some parts may differ from those in papers.
 
@@ -53,6 +53,8 @@ But the Transformer solved these problems only with Attentions. As a result, the
 | **`N Layers`** | 2 | - | 3 |
 | **`N Heads`** | - | - | 8 |
 | **`Dropout Ratio`** | 0.5 | 0.5 | 0.1 |
+| **`Model Params`** |  |  |  |
+| **`Model Size`** |  |  |  |
 
 <br>
 <br>
@@ -67,7 +69,17 @@ But the Transformer solved these problems only with Attentions. As a result, the
 * **Data:** &nbsp; **`downsized WMT14 EN-DE dataset (4.5M -> 450K)`** </br>
 * **Batch Size:** &nbsp; **`16 on Attention, 128 on Seq2Seq and Transformer`** </br>
 * **Learning Rate:** &nbsp; **`1e-4 on Transformer, 1e-3 on Seq2Seq and Attention`** </br>
-* **`Applied Different Initialization for Each Models`**
+
+<br>
+<br>
+
+> **Model Parameter Initialization**
+
+Different Initialization applied for Each Models.
+
+* Uniform Initalization applied on Seq2Seq Model
+* Normal Initalization applied on Attention Model
+* Xarvier Initalization applied on Transformer Model
 
 <center>
   <img src="https://user-images.githubusercontent.com/71929682/168110116-374d3ac9-48d6-41e3-a2ce-d216f2e76422.png" width="80%" height="60%">
@@ -87,7 +99,7 @@ But the Transformer solved these problems only with Attentions. As a result, the
 
 | | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `Seq2Seq` &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp; `Attention` &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp; `Transformer` &nbsp;&nbsp; |
 | :---: | :---: | :---: | :---: |
-| &nbsp; **`Average Training time per Epoch`** &nbsp; | 2min 59sec | 8min 10sec | 44sec|
+| &nbsp; **`Avg Training time per Epoch`** &nbsp; | 2min 59sec | 8min 10sec | 44sec|
 
 
 </br>
@@ -97,10 +109,6 @@ But the Transformer solved these problems only with Attentions. As a result, the
 </br>
 </br>
 
-> **Inference Results**
-
-<br>
-<br>
 
 ## How to Use
 **First clone git repo in your env**
