@@ -102,9 +102,9 @@ def check_size(model):
     return size_all_mb
 
 
-def load_tokenizer(lang):
+def load_tokenizer():
     tokenizer = spm.SentencePieceProcessor()
-    tokenizer.load(f'data/{lang}_spm.model')
+    tokenizer.load(f'data/spm.model')
     tokenizer.SetEncodeExtraOptions('bos:eos')
     return tokenizer
 
@@ -127,12 +127,16 @@ def load_model(config):
 
     print(f"The {config.model_name} model has loaded")
     print(f"--- Model Params: {count_params(model):,}")
-    print(f"--- Model  Size : {check_size(model):.3f} MB")
+    print(f"--- Model  Size : {check_size(model):.3f} MB\n")
     return model.to(config.device)
 
 
 
 def main(config):
+    set_seed()
+    config = Config(args)
+
+    #load model    
     model = load_model(config)
 
     if config.task == 'train': 
@@ -160,6 +164,4 @@ if __name__ == '__main__':
     assert args.task in ['train', 'test', 'inference']
     assert args.model in ['seq2seq', 'attention', 'transformer']
  
-    set_seed()
-    config = Config(args)
     main(config)

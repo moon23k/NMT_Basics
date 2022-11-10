@@ -1,20 +1,20 @@
 import os, json, yaml
 import sentencepiece as spm
 from datasets import load_dataset
+from run import load_tokenizer
 
 
 
 def concat_data(train, valid, test):
-    src, trg = [], []
+    data = []
     for split in (train, valid, test):
         for elem in split:
-            src.append(elem['src'])
-            trg.append(elem['trg'])
+            data.append(elem['src'])
+            data.append(elem['trg'])
 
-    with open('data/src.txt', 'w') as f:
-        f.write('\n'.join(src))
-    with open('data/trg.txt', 'w') as f:
-        f.write('\n'.join(trg))
+    with open('data/concat.txt', 'w') as f:
+        f.write('\n'.join(data))
+
 
 
 
@@ -23,24 +23,23 @@ def build_vocab():
     with open('configs/vocab.yaml', 'r') as f:
         vocab_dict = yaml.load(f, Loader=yaml.FullLoader)
 
-    for file in ["src", 'trg']:        
-        assert os.path.exists(f'data/{file}.txt')
-        opt = f"--input=data/{file}.txt\
-                --model_prefix=data/{file}_spm\
-                --vocab_size={vocab_dict['vocab_size']}\
-                --character_coverage={vocab_dict['coverage']}\
-                --model_type={vocab_dict['type']}\
-                --unk_id={vocab_dict['unk_id']} --unk_piece={vocab_dict['unk_piece']}\
-                --pad_id={vocab_dict['pad_id']} --pad_piece={vocab_dict['pad_piece']}\
-                --bos_id={vocab_dict['bos_id']} --bos_piece={vocab_dict['bos_piece']}\
-                --eos_id={vocab_dict['eos_id']} --eos_piece={vocab_dict['eos_piece']}"
+    assert os.path.exists(f'data/concat.txt')
+    opt = f"--input=data/concat.txt\
+            --model_prefix=data/spm\
+            --vocab_size={vocab_dict['vocab_size']}\
+            --character_coverage={vocab_dict['coverage']}\
+            --model_type={vocab_dict['type']}\
+            --pad_id={vocab_dict['pad_id']} --pad_piece={vocab_dict['pad_piece']}\
+            --unk_id={vocab_dict['unk_id']} --unk_piece={vocab_dict['unk_piece']}\
+            --bos_id={vocab_dict['bos_id']} --bos_piece={vocab_dict['bos_piece']}\
+            --eos_id={vocab_dict['eos_id']} --eos_piece={vocab_dict['eos_piece']}"
 
         spm.SentencePieceTrainer.Train(opt)
-        os.remove(f'data/{file}.txt')
+        os.remove('data/concat.txt')
 
 
 
-def tokenize_datasets(train, valid, test, src_tokenizer, trg_tokenizer):
+def tokenize_datasets(train, valid, test, tokenizer):
     tokenized_data = []
 
     for split in (train, valid, test):
@@ -49,25 +48,14 @@ def tokenize_datasets(train, valid, test, src_tokenizer, trg_tokenizer):
         for elem in split:
             temp_dict = dict()
             
-            temp_dict['src'] = src_tokenizer.EncodeAsIds(elem['src'])
-            temp_dict['trg'] = trg_tokenizer.EncodeAsIds(elem['trg'])
+            temp_dict['src'] = tokenizer.EncodeAsIds(elem['src'])
+            temp_dict['trg'] = tokenizer.EncodeAsIds(elem['trg'])
             
             split_tokenized.append(temp_dict)
         
         tokenized_data.append(split_tokenized)
     
     return tokenized_data
-
-
-
-def load_tokenizers():
-    tokenizers = []
-    for side in ['src', 'trg']:
-        tokenizer = spm.SentencePieceProcessor()
-        tokenizer.load(f'data/{side}_tokenizer.model')
-        tokenizer.SetEncodeExtraOptions('bos:eos')    
-        tokenizers.append(tokenizer)
-    return tokenizers
 
 
 
@@ -108,19 +96,22 @@ def main(downsize=True, sort=True):
     test = filter_dataset(test)
 
     if downsize:
-        train = train[::70]
+        train = train[::100][:30000]
+        valid = valid[::2][:1000]
+        test = test[::2][:1000]
 
     if sort:
         train = sorted(train, key=lambda x: len(x['src']))
         valid = sorted(valid, key=lambda x: len(x['src']))
         test = sorted(test, key=lambda x: len(x['src']))
 
-    #create concat
+    #Build Vocab
     concat_data(train, valid, test)
     build_vocab()
-    src_tokenizer, trg_tokenizer = load_tokenizers()
     
-    train, valid, test = tokenize_datasets(train, valid, test, src_tokenizer, trg_tokenizer)
+    #Tokenize and Save Datasets
+    tokenizer = load_tokenizer()
+    train, valid, test = tokenize_datasets(train, valid, test, tokenizer)
     save_datasets(train, valid, test)
 
 

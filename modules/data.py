@@ -9,10 +9,10 @@ class Dataset(torch.utils.data.Dataset):
     def __init__(self, config, split):
         super().__init__()
         self.model_name = config.model_name
-        self.data = self.load_data(split)
+        self.data = self.read_dataset(split)
 
 
-    def load_data(self, split):
+    def read_dataset(self, split):
         with open(f"data/{split}.json", 'r') as f:
             data = json.load(f)
         return data
@@ -40,11 +40,11 @@ def rnn_collate(batch):
         trg_batch.append(torch.LongTensor(trg))
         
     src_batch = pad_sequence(src_batch, 
-                             batch_first=False, 
+                             batch_first=True, 
                              padding_value=1)
     
     trg_batch = pad_sequence(trg_batch, 
-                             batch_first=False, 
+                             batch_first=True, 
                              padding_value=1)
     
     return {'src': src_batch, 'trg': trg_batch}

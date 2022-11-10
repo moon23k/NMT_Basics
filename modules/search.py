@@ -302,3 +302,27 @@ class TransSearch:
                     break
 
         return outputs 
+
+
+    def greedy(config, model):
+        for src, trg in zip(src_batch, trg_batch):
+            max_len = src.size(-1) + 30
+            src = src.unsqueeze(0)
+            e_mask = model.pad_mask(src)
+            
+            with torch.no_grad():
+                memory = model.encoder(src, e_mask)
+
+            pred_seq = torch.Tensor([[config.bos_idx]]).long().to(config.device)
+            for _ in range(max_len):
+                d_mask = model.dec_mask(pred_seq)
+                out = model.decoder(pred_seq, memory, e_mask, d_mask)
+                out = F.softmax(model.fc_out(out), dim=-1)
+                pred_tok = out.argmax(dim=-1, keepdim=True)[:, -1]
+
+                if pred_tok.item() == config.eos_idx:
+                    break
+                pred_seq = torch.cat([pred_seq, pred_tok], dim=-1)
+
+            _src = [tok for tok in src.squeeze().tolist() if tok != config.pad_idx]
+            _trg = [tok for tok in trg.tolist() if tok != config.pad_idx]        
