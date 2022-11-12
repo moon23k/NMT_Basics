@@ -1,5 +1,4 @@
-import os
-import torch
+import torch, os
 import torch.nn as nn
 from models.seq2seq import Seq2Seq
 from models.attention import Seq2SeqAttn
@@ -62,12 +61,10 @@ def load_model(config):
         model = Transformer(config)
         model.apply(init_xavier)
         
-
     if config.task != 'train':
         assert os.path.exists(config.ckpt_path)
         model_state = torch.load(config.ckpt_path, map_location=config.device)['model_state_dict']
         model.load_state_dict(model_state)
-
 
     print(f"The {config.model_name} model has loaded")
     print(f"--- Model Params: {count_params(model):,}")

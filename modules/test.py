@@ -1,7 +1,7 @@
+import torch, math, time
 import torch.nn as nn
-import math, time, torch
 from torchtext.data.metrics import bleu_score
-from modules.search import SeqSearch, AttnSearch, TransSearch
+from modules.inference import RNNSearch, TransSearch
 
 
 
@@ -13,22 +13,13 @@ class Tester:
         self.dataloader = test_dataloader
 
         self.device = config.device
-        self.pad_idx = config.pad_idx
-        self.bos_idx = config.bos_idx
-        self.eos_idx = config.eos_idx        
-        self.model_name = config.model_name
         self.output_dim = config.output_dim
-        self.criterion = nn.CrossEntropyLoss(ignore_index=self.pad_idx, label_smoothing=0.1).to(self.device)
-        
-        if self.model.training:
-            self.model.eval()
+        self.criterion = nn.CrossEntropyLoss(ignore_index=config.pad_idx, label_smoothing=0.1).to(self.device)
 
-        if self.model_name == 'seq2seq':
-            self.beam = SeqSearch(config, self.model)
-        elif self.model_name == 'attention':
-            self.beam = AttnSearch(config, self.model)
-        elif self.model_name == 'transformer':
-            self.beam = TransSearch(config, self.model)            
+        if config.model_name != 'transformer':
+            self.search = RNNSearch(config, self.model, tokenizer)
+        elif config.model_name == 'transformer':
+            self.search = TransSearch(config, self.model, tokenizer)            
 
 
     def get_bleu_score(self, pred, trg):
@@ -62,13 +53,13 @@ class Tester:
 
                 if self.model_name== 'transformer':
                     logit = self.model(src, trg_input)
-                    greedy_pred = self.Search.greedy_search(src)
-                    beam_pred = self.Search.beam_search(src)
+                    greedy_pred = self.search.greedy_search(src)
+                    beam_pred = self.search.beam_search(src)
 
                 else:
                     logit = self.model(src, trg_input, teacher_forcing_ratio=0.0)
                     greedy_pred = logit.argmax(-1).tolist()
-                    beam_pred = self.Search.beam_search(src)
+                    beam_pred = self.search.beam_search(src)
 
                 loss = self.criterion(logit.contiguous().view(-1, self.output_dim), 
                                       trg_output.contiguous().view(-1)).item()
@@ -88,3 +79,11 @@ class Tester:
         print(f'Test Results on {self.model_name} model | Time: {self.measure_time(start_time, time.time())}')
         print(f">> Test Loss: {tot_loss:3f} | Test PPL: {math.exp(tot_loss):2f}")
         print(f">> Greedy BLEU: {tot_greedy_bleu:2f} | Beam BLEU: {tot_beam_bleu:2f}")
+
+
+'''
+Test에서도 
+
+ General  Test 
+Inference Test
+'''        

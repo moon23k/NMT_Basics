@@ -68,15 +68,16 @@ def save_datasets(train, valid, test):
 
 
 
-def filter_dataset(data, min_len=10, max_len=300):
+def filter_dataset(data, min_len=10, max_len=300, max_diff=50):
     filtered = []
     for elem in data:
         temp_dict = dict()
         src_len, trg_len = len(elem['en']), len(elem['de'])
         max_condition = (src_len <= max_len) & (trg_len <= max_len)
         min_condition = (src_len >= min_len) & (trg_len >= min_len)
+        diff_condition = abs(src_len - trg_len) < max_diff
 
-        if max_condition & min_condition:
+        if max_condition & min_condition & diff_condition:
             temp_dict['src'] = elem['en']
             temp_dict['trg'] = elem['de']
             filtered.append(temp_dict)

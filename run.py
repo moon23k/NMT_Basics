@@ -7,8 +7,8 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.backends.cudnn as cudnn
 
-from modules.data import load_dataloader
 from modules.model import load_model
+from modules.data import load_dataloader
 
 from modules.test import Tester
 from modules.train import Trainer
@@ -69,6 +69,26 @@ def load_tokenizer():
     return tokenizer
 
 
+def tranaslate(config, model, tokenizer):
+    print('Type "quit" to terminate Translation')
+    
+    while True:
+        user_input = input('Please Type Text >> ')
+        if user_input.lower() == 'quit':
+            print('--- Terminate the Translation ---')
+            print('-' * 30)
+            break
+
+        src = self.src_tokenizer.Encode(user_input)
+        src = torch.LongTensor(src).unsqueeze(0).to(self.device)
+
+        if self.search == 'beam':
+            pred_seq = self.search.beam_search(src)
+        elif self.search == 'greedy':
+            pred_seq = self.search.greedy_search(src)
+
+        print(f" Original  Sequence: {user_input}")
+        print(f'Translated Sequence: {self.tokenizer.Decode(pred_seq)}\n')
 
 def main(args):
     set_seed()
