@@ -23,20 +23,7 @@ class Trainer:
                                     lr=config.learning_rate, 
                                     betas=(0.9, 0.98), 
                                     eps=1e-8)
-        
-        if config.scheduler == 'constant':
-            self.scheduler = None
-        elif config.scheduler == 'exp':
-            self.scheduler = optim.lr_scheduler.ExponentialLR(self.optimizer, gamma=0.95)
-        elif config.scheduler == 'cycle':
-            self.scheduler = optim.lr_scheduler.CyclicLR(self.optimizer,
-                                                         base_lr=1e-4, 
-                                                         max_lr=1e-3, 
-                                                         step_size_up=10, 
-                                                         step_size_down=None, 
-                                                         mode='exp_range', 
-                                                         gamma=0.97,
-                                                         cycle_momentum=False)
+        self.scheduler = optim.lr_scheduler.ReduceLROnPlateau(self.optimizer, 'min')
         
         self.ckpt_path = config.ckpt_path
         self.record_path = f"ckpt/{self.model_name}.json"
@@ -76,13 +63,13 @@ class Trainer:
             
             records.append(record_dict)
             self.print_epoch(record_dict)
-
-            if self.scheduler is not None:
-                self.scheduler.step()
+            
+            val_loss = record_dict['valid_loss']
+            self.scheduler.step(val_loss)
 
             #save best model
-            if best_bleu > record_dict['valid_loss']:
-                best_bleu = record_dict['valid_loss']
+            if best_bleu > val_loss:
+                best_bleu = val_loss
                 torch.save({'epoch': epoch,
                             'model_state_dict': self.model.state_dict(),
                             'optimizer_state_dict': self.optimizer.state_dict()},

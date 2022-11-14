@@ -26,7 +26,6 @@ class Config(object):
 
         self.task = args.task
         self.model_name = args.model
-        self.scheduler = args.scheduler
         
         self.unk_idx = 0
         self.pad_idx = 1
@@ -52,6 +51,7 @@ class Config(object):
             print(f"* {attribute}: {value}")
 
 
+
 def set_seed(SEED=42):
     random.seed(SEED)
     np.random.seed(SEED)
@@ -62,11 +62,13 @@ def set_seed(SEED=42):
     cudnn.deterministic = True
 
 
+
 def load_tokenizer():
     tokenizer = spm.SentencePieceProcessor()
     tokenizer.load(f'data/spm.model')
     tokenizer.SetEncodeExtraOptions('bos:eos')
     return tokenizer
+
 
 
 def tranaslate(config, model, tokenizer):
@@ -79,16 +81,18 @@ def tranaslate(config, model, tokenizer):
             print('-' * 30)
             break
 
-        src = self.src_tokenizer.Encode(user_input)
-        src = torch.LongTensor(src).unsqueeze(0).to(self.device)
+        src = config.src_tokenizer.Encode(user_input)
+        src = torch.LongTensor(src).unsqueeze(0).to(config.device)
 
-        if self.search == 'beam':
-            pred_seq = self.search.beam_search(src)
-        elif self.search == 'greedy':
-            pred_seq = self.search.greedy_search(src)
+        if config.search == 'beam':
+            pred_seq = config.search.beam_search(src)
+        elif config.search == 'greedy':
+            pred_seq = config.search.greedy_search(src)
 
         print(f" Original  Sequence: {user_input}")
-        print(f'Translated Sequence: {self.tokenizer.Decode(pred_seq)}\n')
+        print(f'Translated Sequence: {tokenizer.Decode(pred_seq)}\n')
+
+
 
 def main(args):
     set_seed()
@@ -124,5 +128,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
     assert args.task in ['train', 'test', 'inference']
     assert args.model in ['seq2seq', 'attention', 'transformer']
- 
+
+    if args.task == 'inference':
+        assert args.search in ['greedy', 'beam']
+
     main(args)
