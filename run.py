@@ -27,8 +27,8 @@ class Config(object):
         self.task = args.task
         self.model_name = args.model
         
-        self.unk_idx = 0
-        self.pad_idx = 1
+        self.pad_idx = 0
+        self.unk_idx = 1
         self.bos_idx = 2
         self.eos_idx = 3
 
@@ -39,7 +39,7 @@ class Config(object):
         self.ckpt_path = f"ckpt/{self.model_name}.pt"
 
         if self.task == 'inference':
-            self.search = args.search
+            self.search_method = args.search
             self.device = torch.device('cpu')
         else:
             self.search = None
@@ -110,6 +110,7 @@ def main(args):
         test_dataloader = load_dataloader(config, 'test')
         tester = Tester(config, model, test_dataloader, tokenizer)
         tester.test()
+        tester.inference_test()
     
     elif config.task == 'inference':
         tokenizer = load_tokenizer()
