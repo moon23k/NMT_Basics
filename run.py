@@ -123,7 +123,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-task', required=True)
     parser.add_argument('-model', required=True)
-    parser.add_argument('-scheduler', default='constant', required=False)
     parser.add_argument('-search', default='greedy', required=False)
     
     args = parser.parse_args()
