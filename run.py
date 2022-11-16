@@ -12,7 +12,7 @@ from modules.data import load_dataloader
 
 from modules.test import Tester
 from modules.train import Trainer
-from modules.inference import Translator
+from modules.search import RNNSearch, TransSearch
 
 
 
@@ -71,26 +71,27 @@ def load_tokenizer():
 
 
 
-def tranaslate(config, model, tokenizer):
-    print('Type "quit" to terminate Translation')
+def inference(config, model, tokenizer):
+    model.eval()
+
+    if config.model_name == 'transformer':
+        search_module = TransSearch(config, model, tokenizer)
+    else:
+        search_module = RNNSearch(config, model, tokenizer)
+
+    print(f'--- Trnaslation Started on {config.model_name} model! ---')
+    print('[ Type "quit" on user input to stop the Process ]')
     
     while True:
-        user_input = input('Please Type Text >> ')
-        if user_input.lower() == 'quit':
-            print('--- Terminate the Translation ---')
-            print('-' * 30)
-            break
-
-        src = config.src_tokenizer.Encode(user_input)
-        src = torch.LongTensor(src).unsqueeze(0).to(config.device)
-
-        if config.search == 'beam':
-            pred_seq = config.search.beam_search(src)
-        elif config.search == 'greedy':
-            pred_seq = config.search.greedy_search(src)
-
-        print(f" Original  Sequence: {user_input}")
-        print(f'Translated Sequence: {tokenizer.Decode(pred_seq)}\n')
+        input_seq = input('\nUser Input sentence >> ')
+        if input_seq.lower() == 'quit':
+            print('\n--- Trnaslation has terminated! ---')
+            break        
+        if config.search_method == 'beam':
+            output_seq = search_module.beam_search(input_seq)
+        else:
+            output_seq = search_module.greedy_search(input_seq)
+        print(f"Translated sentence >> {output_seq}")       
 
 
 
